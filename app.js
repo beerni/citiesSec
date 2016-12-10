@@ -1,14 +1,14 @@
 //Node modules requires
-var http        = require('http');
+var https = require('https');
 var fs = require('fs');
 var path = require('path');
 var express = require ('express');
 var request = require('request');
 var url = require('url');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var fs = require('fs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -25,9 +25,13 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.set('port',process.env.PORT || 8080);
-http.createServer(app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
+var options = {
+    key: fs.readFileSync('server-key.pem'),
+    cert: fs.readFileSync('server-cert.pem')
+};
+
+https.createServer(options, app).listen(8080, function () {
+    console.log('Started!');
 });
 
 module.exports = app;
