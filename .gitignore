@@ -52,4 +52,4 @@ node/views/
 
 README.md
 public/.idea
-bower_components
+public/web/bower_components
