@@ -14,7 +14,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use(express.static(path.join(__dirname, 'public/www')));
+app.use(express.static(path.join(__dirname, 'public/web')));
 
 var routes = require('./routes');
 app.use('/', routes);
@@ -51,7 +51,7 @@ module.exports = app;
  app.use(logger('dev'));
  app.use(bodyParser.json());
  app.use(bodyParser.urlencoded({extended: false}));
- app.use(express.static(path.join(__dirname, 'public/noteWrangler')));
+ app.use(express.static(path.join(__dirname, 'public/web')));
 
 
  var routes = require('./routes');

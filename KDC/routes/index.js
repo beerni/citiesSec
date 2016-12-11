@@ -8,53 +8,56 @@ var rsa = require('./rsa');
 var keys = rsa.generateKeys(512);
 var bignum = require('bignum');
 var request = require('request');
+var usuario = require('../models/user.js');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-router.post('/ttp', function (req, res) {
-    console.log('from Alice');
-    console.log(req.body);
-    compareHash(req.body.data, function () {
-        var A='Alice';
-        var B = 'Bob';
-        var K=req.body.data.K;
-        var TTP='TTP';
-        var concat=TTP+'|'+A+'|'+B+'|'+K;
-        var concatHash = CryptoJS.SHA256(concat);
-        concatHash= bignum(concatHash.toString(),16);
-        var proofOfPublicationK = concatHash.powm(keys.privateKey.d, keys.publicKey.n);
-        var data={
-            TTP:TTP,
-            A:A,
-            B:B,
-            K:K,
-            proofPublication:proofOfPublicationK.toString(),
-            eTTP:keys.publicKey.e.toString(),
-            nTTP:keys.publicKey.n.toString()
-        };
-        res.status(200).send({data:data});
-        request({
-            uri: "https://localhost:8080/publicationProof",
-            method: "POST",
-            form: data
-        }, function(error, response, body) {
-            console.log(error);
-        });
+function generateSalt() {
+    var salt = CryptoJS.lib.WordArray.random(128 / 8);
+    return salt.toString();
+}
+
+router.post('/user', function (req, res) {
+    var userLog = req.body;
+    usuario.find({login: userLog.login}, function (err, user) {
+        if (user.length != 0) {
+            res.status(409).send('Conflict');
+        }
+        else {
+            var salt = generateSalt();
+            var concat = userLog.password + '|' + salt;
+            var passwordHash = CryptoJS.SHA256(concat).toString();
+            var newUser = new usuario({
+                login: userLog.login,
+                password: passwordHash,
+                salt: salt
+            });
+
+            newUser.save(function (err) {
+                if (err) res.status(500).send('Internal server error');
+                else
+                    res.status(200).send('Registered');
+            });
+
+        }
     });
-   function compareHash(info, cb) {
-       var concat = info.A + '|' + info.TTP + '|' + info.B +'|' + info.K;
-       var eC = bignum(info.eClient);
-       var nC= bignum(info.nClient);
-       var originHash = CryptoJS.SHA256(concat).toString();
-       var originServer = bignum(info.originProofOfK);
-       var decrypted = originServer.powm(eC,nC).toString(16);
-       if(decrypted.localeCompare(originHash)==0){
-           console.log('Equal hashes from proof of K!');
-           console.log(decrypted.toString(16));
-           console.log(originHash.toString(16));
-           cb();
-       }
-       else
-           console.log('mismatch');
-   }
 });
 
+router.post('/login', function (req, res) {
+    var userLog = req.body;
+    usuario.findOne({login: userLog.login}, function (err, user) {
+        if (user.length != 0) {
+            var concat = userLog.password + '|' + user.salt;
+            var passwordHash = CryptoJS.SHA256(concat).toString();
+            if (passwordHash.localeCompare(user.password) == 0) {
+                console.log('matches')
+                res.send('OK');
+            }
+            else {
+                res.status(400).send('Bad password')
+            }
+        }
+        else {
+            res.status(404).send('Not found');
+        }
+    });
+});
 module.exports = router;

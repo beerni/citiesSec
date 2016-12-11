@@ -52,5 +52,4 @@ node/views/
 
 README.md
 public/.idea
-public/noteWrangler
-public/www/bower_components
+public/web/bower_components
