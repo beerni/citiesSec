@@ -9,6 +9,15 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
 var fs = require('fs');
+var mongoose = require('mongoose');
+
+mongoose.connect("mongodb://localhost/secretMarketDB", function (err, res) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log("Conectado a la base de datos");
+    }
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -17,7 +26,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public/web')));
 
 var routes = require('./routes');
-app.use('/', routes);
+var user = require('./routes/user');
+app.use('/api/user', user);
+app.use('/api', routes);
+
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

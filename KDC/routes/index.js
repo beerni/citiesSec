@@ -8,7 +8,7 @@ var rsa = require('./rsa');
 var keys = rsa.generateKeys(512);
 var bignum = require('bignum');
 var request = require('request');
-var usuario = require('../models/user.js');
+var usuario = require('.././user.js');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 function generateSalt() {
     var salt = CryptoJS.lib.WordArray.random(128 / 8);

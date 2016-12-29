@@ -1,4 +1,4 @@
-angular.module('cities', ['ngRoute'])
+angular.module('cities', ['ngRoute','ngCookies'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/', {
@@ -12,6 +12,10 @@ angular.module('cities', ['ngRoute'])
             .when('/login', {
                 templateUrl: 'templates/pages/loginRegistration.html',
                 controller:'LoginController'
+            })
+            .when('/anonimous/login', {
+                templateUrl: 'templates/pages/anonimousLogin.html',
+                controller:'AnonimousController'
             })
 
     }]);

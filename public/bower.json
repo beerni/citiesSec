@@ -13,6 +13,7 @@
     "bootstrap-btn-outline-rounded": "~0.0.3",
     "components-font-awesome": "~4.3.0",
     "js-sha256": "^0.3.2",
-    "sweetalert": "^1.1.3"
+    "sweetalert": "^1.1.3",
+    "angular-cookies": "^1.6.1"
   }
 }

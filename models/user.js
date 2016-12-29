@@ -8,10 +8,10 @@ Schema = mongoose.Schema;
 
 var userSchema = new Schema({
 
-    login: {
+    socialReason: {
         type: String
     },
-    password: {
+    hashedCIF: {
         type: String
     },
     salt: {
