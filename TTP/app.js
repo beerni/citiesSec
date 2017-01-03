@@ -53,7 +53,7 @@ var options = {
 
 
 https.createServer(options, app).listen(8085, function () {
-    console.log('Started KDC on port 8085 !');
+    console.log('Started TTP on port 8085 !');
 });
 
 //var usuario = require('./models/user.js');

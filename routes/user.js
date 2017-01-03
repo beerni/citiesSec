@@ -6,6 +6,7 @@ var router = express.Router();
 var CryptoJS = require("crypto-js");
 var usuario = require('../models/user.js');
 var cifs = require ('../models/cifs.js');
+
 function generateSalt() {
     var salt = CryptoJS.lib.WordArray.random(128 / 8);
     return salt.toString();

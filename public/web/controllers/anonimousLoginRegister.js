@@ -1,7 +1,7 @@
 /**
  * Created by bernatmir on 28/12/16.
  */
-angular.module('cities').controller('AnonimousController', ['$http', '$scope', '$window', '$cookies', function ($http, $scope, $window, $cookies) {
+angular.module('cities').controller('AnonimousController', ['$http', '$scope', '$window', '$cookies', '$rootScope', function ($http, $scope, $window, $cookies, $rootScope) {
     !function (a) {
         function b(b, d) {
             function e() {
@@ -201,10 +201,48 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
 
     });
     $scope.user = {};
+    var urlServer = 'https://localhost:8080/api';
+    var rand;
+    var unblind;
+    function convertToHex(str) {
+        var hex = '';
+        for (var i = 0; i < str.length; i++) {
+            hex += '' + str.charCodeAt(i).toString(16);
+        }
+        return hex;
+    }
+
+    function hex2a(hexx) {
+        var hex = hexx.toString();//force conversion
+        var str = '';
+        for (var i = 0; i < hex.length; i += 2)
+            str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        return str;
+    }
+
     $scope.getToken = function () {
 
         if ($cookies.get('canLogin')) {
-            console.log('tiene cookie y puede obtener token')
+            $http.get(urlServer + '/publickey').success(function (response) {
+                $rootScope.serverPublic = response;
+                var n = response.n;
+                var e = response.e;
+                //Blinding message
+                var clientPublic = $rootScope.clientKeys.publicKey;
+                var concat = 'clientKey' + ':' + clientPublic.n.toString();
+                concat = concat.substring(0, 50);
+                console.log(concat);
+                rand = bigInt.randBetween(2, n - 1);
+                var publicToHex = bigInt(convertToHex(concat), 16);
+                var publicBlinded = (publicToHex.multiply(rand.modPow(e, n))).mod(n);
+                publicBlinded = publicBlinded.toString(16);
+                $http.post(urlServer + '/sign', {data: publicBlinded}).success(function (res) {
+                    var msgSigned = bigInt(res.data, 16);
+                    unblind = (msgSigned.multiply(rand.modInv(n))).mod(n);
+                    var decryptMsg = unblind.modPow(e, n).toString(16);
+                    console.log(hex2a(decryptMsg));
+                });
+            });
         }
         else {
             //console.log('No tiene cookie!');
@@ -218,6 +256,5 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
             $window.location.href = "https://localhost:8080/#/login";
 
         }
-    }
-
+    };
 }]);
