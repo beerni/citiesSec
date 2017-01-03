@@ -48,7 +48,6 @@ rsaInt.publicKey.prototype = {
 
 rsaInt.privateKey.prototype = {
     encrypt: function(m) {
-        console.log(bigInt(m));
         return m.modPow(this.publicKey.e, this.publicKey.n);
     },
     verify: function(c) {

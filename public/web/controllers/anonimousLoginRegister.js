@@ -204,6 +204,7 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
     var urlServer = 'https://localhost:8080/api';
     var rand;
     var unblind;
+
     function convertToHex(str) {
         var hex = '';
         for (var i = 0; i < str.length; i++) {
@@ -231,16 +232,46 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                 var clientPublic = $rootScope.clientKeys.publicKey;
                 var concat = 'clientKey' + ':' + clientPublic.n.toString();
                 concat = concat.substring(0, 50);
-                console.log(concat);
                 rand = bigInt.randBetween(2, n - 1);
                 var publicToHex = bigInt(convertToHex(concat), 16);
                 var publicBlinded = (publicToHex.multiply(rand.modPow(e, n))).mod(n);
                 publicBlinded = publicBlinded.toString(16);
                 $http.post(urlServer + '/sign', {data: publicBlinded}).success(function (res) {
                     var msgSigned = bigInt(res.data, 16);
+
+                    //Token
                     unblind = (msgSigned.multiply(rand.modInv(n))).mod(n);
-                    var decryptMsg = unblind.modPow(e, n).toString(16);
-                    console.log(hex2a(decryptMsg));
+
+                    //Comprovacions
+                    // var decryptMsg = unblind.modPow(e, n).toString(16);
+                    //console.log(hex2a(decryptMsg));
+                    $http.post(urlServer + '/sign/verify', {data: unblind.toString()}).success(function (res) {
+                        var data = {
+                            challenge: $rootScope.clientKeys.privateKey.sign(bigInt(convertToHex(res), 16)).toString(),
+                            e: $rootScope.clientKeys.publicKey.e.toString(),
+                            n: $rootScope.clientKeys.publicKey.n.toString()
+                        };
+                        $http.post(urlServer + '/challenge', {data: data}).success(function (res) {
+                            swal({
+                                    title: "Verify token",
+                                    text: "Submit to verify your token",
+                                    type: "info",
+                                    showCancelButton: true,
+                                    closeOnConfirm: false,
+                                    showLoaderOnConfirm: true,
+                                },
+                                function(){
+                                    setTimeout(function(){
+                                        swal("Token verified", unblind.toString(16).substring(0,50));
+                                    }, 2000);
+                                });
+                        }).error(function (err) {
+                            sweetAlert("Error...", "Validating signature!", "error");
+
+                        })
+                    }).error(function (err) {
+                        sweetAlert("Error...", "Validating signature!", "error");
+                    })
                 });
             });
         }
