@@ -390,4 +390,46 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
 
         }
     };
+
+    $scope.login = function () {
+        if ($scope.user.username == undefined || $scope.user.password == undefined) {
+            sweetAlert("Oops...", "Introduce something!", "error");
+        }
+        else {
+            var login = {
+                username: 'ber', //$scope.user.username,
+                password: 'nat'//$scope.user.password
+            };
+            $http.post(urlServer + '/user/login', login).success(function (res) {
+                $rootScope.token = {
+                    headers: {
+                        'x-access-token': res.token
+                    }
+                };
+                $cookies.put('tokenData', JSON.stringify(res));
+                $window.location.href = 'https://localhost:8080/#/loginTest'
+
+            }).error(function (res) {
+                if (res == 'Not Found') {
+                    sweetAlert("Oops...", "This username is not registered!", "error");
+                    $scope.user = null;
+                }
+                if (res == 'Bad Request')
+                    sweetAlert("Oops...", "Error in your password", "error");
+                $scope.user.password = null;
+
+            });
+        }
+    };
+
+
+    $scope.test = function () {
+        $http.post(urlServer + '/user/loginTest', {}, $rootScope.token).success(function (res) {
+        });
+    };
+    $scope.sinJSON = function () {
+        $http.post(urlServer + '/user/loginTest', {}).success(function (res) {
+            console.log(res);
+        });
+    }
 }]);
