@@ -2,7 +2,7 @@
 var https = require('https');
 var fs = require('fs');
 var path = require('path');
-var express = require ('express');
+var express = require('express');
 var request = require('request');
 var url = require('url');
 var logger = require('morgan');
@@ -31,9 +31,11 @@ app.use(express.static(path.join(__dirname, 'public/web')));
 
 var routes = require('./routes');
 var user = require('./routes/user');
-app.use('/api/user', user);
-app.use('/api', routes);
+var ad = require('./routes/ad');
 
+app.use('/api', routes);
+app.use('/api/user', user);
+app.use('/api/ad', ad);
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

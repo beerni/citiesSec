@@ -14,7 +14,6 @@ var moment = require('moment');
 var jwtauth = require('../config/jwtauth');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-
 function generateSalt() {
     var salt = CryptoJS.lib.WordArray.random(128 / 8);
     return salt.toString();
@@ -47,10 +46,7 @@ router.post('/register', function (req, res, next) {
                         else
                             res.status(200).send('Registered');
                     });
-
-
                 }
-
             })
         }
     });
@@ -73,7 +69,7 @@ function compareHash(info, cb) {
     else
         console.log('mismatch');
 
-}
+};
 
 router.post('/register/anonimous', function (req, res, next) {
     if (req.body.checkUsername) {
