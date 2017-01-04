@@ -11,6 +11,7 @@ var app = express();
 var fs = require('fs');
 var mongoose = require('mongoose');
 
+mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost/secretMarketDB", function (err, res) {
     if (err) {
         console.log(err);

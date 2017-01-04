@@ -9,8 +9,7 @@ const crypto = require("crypto");
 
 //Add an ad
 router.post('/add', function (req, res) {
-    console.log(req.body.username);
-    var add = new Ad({
+    var ad = new Ad({
         _id: crypto.randomBytes(16).toString("hex"),
         title: req.body.title,
         price: req.body.price,
@@ -18,9 +17,9 @@ router.post('/add', function (req, res) {
         username: req.body.username
     });
 
-    add.save(function (err, users) {
+    ad.save(function (err, a) {
         if (err) return res.send(500, err.message);
-        res.status(200).json(users);
+        res.status(200).json(a);
     });
 });
 
@@ -48,4 +47,28 @@ router.get('/user/:username', function (req, res) {
     })
 });
 
+//Update ad
+router.put('/:id', function (req, res) {
+    Ad.findById(req.params.id, function (err, ad) {
+        ad.title = req.body.title;
+        ad.description = req.body.description;
+        ad.price = req.body.price;
+
+        ad.save(function (err, a) {
+            if (err) return res.send(500, err.message);
+            res.status(200).json(a);
+        });
+    })
+});
+
+//Delete ad by id
+router.delete('/:id', function (req, res) {
+    Ad.findById(req.params.id, function (err, ad) {
+        if (err) return res.send(500, err.message);
+        ad.remove(function (err) {
+            if (!err) res.send("AD DELETED...!!!");
+            else res.send(500, err.message);
+        });
+    })
+});
 module.exports = router;
