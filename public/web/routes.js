@@ -17,8 +17,12 @@ angular.module('cities', ['ngRoute', 'ngCookies'])
                 templateUrl: 'templates/pages/anonimousLogin.html',
                 controller: 'AnonimousController'
             })
+            .when('/loginTest', {
+            templateUrl: 'templates/pages/testLogin.html',
+            controller: 'AnonimousController'
+        })
 
     }])
-    .run( function ($rootScope) {
+    .run(function ($rootScope) {
         $rootScope.clientKeys = rsaInt.generateKeys(512);
     });
