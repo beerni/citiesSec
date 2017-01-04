@@ -397,9 +397,10 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
         }
         else {
             var login = {
-                username: 'ber', //$scope.user.username,
-                password: 'nat'//$scope.user.password
+                username: $scope.user.username,
+                password: $scope.user.password
             };
+            console.log(login);
             $http.post(urlServer + '/user/login', login).success(function (res) {
                 $rootScope.token = {
                     headers: {
@@ -410,13 +411,15 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                 $window.location.href = 'https://localhost:8080/#/loginTest'
 
             }).error(function (res) {
+                console.log(res);
                 if (res == 'Not Found') {
                     sweetAlert("Oops...", "This username is not registered!", "error");
                     $scope.user = null;
                 }
-                if (res == 'Bad Request')
+                if (res == 'Bad Request') {
                     sweetAlert("Oops...", "Error in your password", "error");
-                $scope.user.password = null;
+                    $scope.user.password = null;
+                }
 
             });
         }

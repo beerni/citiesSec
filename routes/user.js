@@ -135,7 +135,8 @@ router.post('/login', function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
     anonimousUsers.findOne({username: username}, function (err, user) {
-        if (user.length == 0) {
+        console.log(user);
+        if (user == null) {
             res.sendStatus(404);
         }
         else {
