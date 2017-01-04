@@ -18,13 +18,7 @@ var https = require('https');
 
 var app = express();
 
-/*mongoose.connect("mongodb://localhost/kdcDB", function (err, res) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log("Conectado a la base de datos");
-    }
-});*/
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

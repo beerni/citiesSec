@@ -204,6 +204,7 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
     var urlServer = 'https://localhost:8080/api';
     var rand;
     var unblind;
+
     function convertToHex(str) {
         var hex = '';
         for (var i = 0; i < str.length; i++) {
@@ -220,6 +221,96 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
         return str;
     }
 
+    function compareHash(info, cb) {
+        var concat = info.A + '|' + info.B + '|' + info.username + '|' + info.password;
+        var eTTP = bigInt(info.eTTP);
+        var nTTP = bigInt(info.nTTP);
+        var originHash = CryptoJS.SHA256(concat).toString();
+        var originServer = bigInt(info.proof);
+        var decrypted = originServer.modPow(eTTP, nTTP).toString(16);
+        if (decrypted.localeCompare(originHash) == 0) {
+            console.log('Equal hashes from proof!');
+            console.log(decrypted.toString(16));
+            console.log(originHash.toString(16));
+            cb();
+        }
+        else
+            console.log('mismatch');
+    }
+
+    function register() {
+        var username, password;
+        swal({
+                title: "Username",
+                text: "Write your username",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                animation: "slide-from-top",
+                inputPlaceholder: "Username"
+            },
+            function (inputValue) {
+                if (inputValue === false) return false;
+
+                if (inputValue === "") {
+                    swal.showInputError("You need to write something!");
+                    return false
+                }
+                if (inputValue) {
+                    username = inputValue;
+                    $http.post(urlServer + '/user/register/anonimous', {
+                        username: username,
+                        checkUsername: true
+                    }).success(function (res) {
+                        inputValue = null;
+                        swal({
+                                title: "Password",
+                                text: "Write your password",
+                                type: "input",
+                                showCancelButton: true,
+                                closeOnConfirm: false,
+                                animation: "slide-from-top",
+                                inputPlaceholder: "Password"
+                            },
+                            function (inputValue) {
+                                if (inputValue === false) return false;
+
+                                if (inputValue === "") {
+                                    swal.showInputError("You need to write something!");
+                                    return false
+                                }
+                                if (inputValue) {
+                                    password = inputValue;
+                                    $http.post(urlServer + '/user/register/anonimous', {
+                                        username: username,
+                                        password: password,
+                                        checkUsername: false
+                                    }).success(function (res) {
+                                        $http.get('https://localhost:8085/ttp/publication').success(function (res) {
+                                            if (username === res.username && password === password) {
+                                                compareHash(res, function () {
+                                                    swal("Well done!", "Your user is registered!", "success")
+                                                    $cookies.remove('canLogin');
+
+                                                })
+                                            }
+                                        })
+                                    }).error(function (res) {
+
+                                    })
+                                }
+                            });
+                    }).error(function (err) {
+                        swal.showInputError("This username exists!");
+                        return false
+                    });
+
+                }
+            });
+
+
+    }
+
     $scope.getToken = function () {
 
         if ($cookies.get('canLogin')) {
@@ -231,16 +322,58 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                 var clientPublic = $rootScope.clientKeys.publicKey;
                 var concat = 'clientKey' + ':' + clientPublic.n.toString();
                 concat = concat.substring(0, 50);
-                console.log(concat);
                 rand = bigInt.randBetween(2, n - 1);
                 var publicToHex = bigInt(convertToHex(concat), 16);
                 var publicBlinded = (publicToHex.multiply(rand.modPow(e, n))).mod(n);
                 publicBlinded = publicBlinded.toString(16);
                 $http.post(urlServer + '/sign', {data: publicBlinded}).success(function (res) {
                     var msgSigned = bigInt(res.data, 16);
+
+                    //Token
                     unblind = (msgSigned.multiply(rand.modInv(n))).mod(n);
-                    var decryptMsg = unblind.modPow(e, n).toString(16);
-                    console.log(hex2a(decryptMsg));
+
+                    //Comprovacions
+                    // var decryptMsg = unblind.modPow(e, n).toString(16);
+                    //console.log(hex2a(decryptMsg));
+                    $http.post(urlServer + '/sign/verify', {data: unblind.toString()}).success(function (res) {
+                        var data = {
+                            challenge: $rootScope.clientKeys.privateKey.sign(bigInt(convertToHex(res), 16)).toString(),
+                            e: $rootScope.clientKeys.publicKey.e.toString(),
+                            n: $rootScope.clientKeys.publicKey.n.toString()
+                        };
+                        $http.post(urlServer + '/challenge', {data: data}).success(function (res) {
+                            swal({
+                                    title: "Verify token",
+                                    text: "Submit to verify your token",
+                                    type: "info",
+                                    showCancelButton: true,
+                                    closeOnConfirm: false,
+                                    showLoaderOnConfirm: true,
+                                },
+                                function () {
+                                    setTimeout(function () {
+                                        swal({
+                                                title: "Token verified",
+                                                text: unblind.toString(16).substring(0, 50),
+                                                confirmButtonText: "Register!",
+                                                closeOnConfirm: false,
+                                                closeOnCancel: false
+                                            },
+                                            function (isConfirm) {
+                                                if (isConfirm) {
+                                                    register();
+                                                }
+                                            });
+                                    }, 2000);
+                                });
+
+                        }).error(function (err) {
+                            sweetAlert("Error...", "Validating signature!", "error");
+
+                        })
+                    }).error(function (err) {
+                        sweetAlert("Error...", "Validating signature!", "error");
+                    })
                 });
             });
         }
