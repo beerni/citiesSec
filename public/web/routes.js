@@ -18,9 +18,18 @@ angular.module('cities', ['ngRoute', 'ngCookies'])
                 controller: 'AnonimousController'
             })
             .when('/loginTest', {
-            templateUrl: 'templates/pages/testLogin.html',
-            controller: 'AnonimousController'
-        })
+                templateUrl: 'templates/pages/testLogin.html',
+                controller: 'AnonimousController'
+            })
+            .when('/products', {
+                templateUrl: 'templates/pages/products.html',
+                controller: 'ProductsController'
+            })
+            .when('/chat', {
+                templateUrl: 'templates/pages/chat.html',
+                controller: 'ChatController'
+            })
+
 
     }])
     .run(function ($rootScope) {

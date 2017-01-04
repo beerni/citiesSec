@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<section id="service" class="home-section color-dark bg-gray">
+    <div class="container marginbot-50">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <div>
+                    <div class="section-heading text-center">
+                        <h2 class="h-bold">PRODUCTS OF LOBO4</h2>
+                        <div class="divider-header"></div>
+                    </div>
+                    <div class="section-heading text-center">
+                        <a ng-click="create()"class="btn btn-primary"><span class="fa fa-cart-plus" aria-hidden="true"></span>UPLOAD PRODUCT</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+<div class="text-center">
+    <div class="container">
+        <div class="text-center">
+            <label  ng-show="noProducts">You haven't any product,upload one!</label>
+        </div>
+        <div class="row animatedParent" ng-show="!noProducts">
+            <div ng-repeat="product in products " class="col-md-4">
+                    <div class="service-box">
+                        <a ng-click="delete(product._id)" class="btn btn-danger"><span class="fa fa-trash" aria-hidden="true"></span>Delete</a>
+                        <a ng-click="edit()" class="btn btn-primary"><span class="fa fa-cog" aria-hidden="true"></span>Edit</a>
+                        <div class="service-icon">
+                            <img width="200" height="273" src="{{product.imgurl}}">
+                        </div>
+                        <div class="service-desc">
+                            <h5>{{product.title}}</h5>
+                            <div class="divider-header"></div>
+                            <h4>{{product.price}} €</h4>
+                            {{product.description}}
+                            </p>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+</html>
