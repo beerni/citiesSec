@@ -1,4 +1,4 @@
-angular.module('cities', ['ngRoute', 'ngCookies'])
+angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
@@ -21,6 +21,14 @@ angular.module('cities', ['ngRoute', 'ngCookies'])
                 templateUrl: 'templates/pages/testLogin.html',
                 controller: 'AnonimousController'
             })
+            .when('/create', {
+                templateUrl: 'templates/pages/createAd.html',
+                controller: 'CreateadController'
+            })
+            .when('/edit', {
+                templateUrl: 'templates/pages/EditProduct.html',
+                controller: 'EditProduct'
+            })
             .when('/products', {
                 templateUrl: 'templates/pages/products.html',
                 controller: 'ProductsController'
@@ -31,7 +39,9 @@ angular.module('cities', ['ngRoute', 'ngCookies'])
             })
 
 
+
     }])
     .run(function ($rootScope) {
         $rootScope.clientKeys = rsaInt.generateKeys(512);
-    });
+
+});

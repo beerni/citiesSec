@@ -10,7 +10,7 @@
                         <div class="divider-header"></div>
                     </div>
                     <div class="section-heading text-center">
-                        <a ng-click="create()"class="btn btn-primary"><span class="fa fa-cart-plus" aria-hidden="true"></span>UPLOAD PRODUCT</a>
+                        <a href="#/create" class="btn btn-primary"><span class="fa fa-cart-plus" aria-hidden="true"></span>UPLOAD PRODUCT</a>
                     </div>
                 </div>
 
@@ -27,9 +27,11 @@
             <div ng-repeat="product in products " class="col-md-4">
                     <div class="service-box">
                         <a ng-click="delete(product._id)" class="btn btn-danger"><span class="fa fa-trash" aria-hidden="true"></span>Delete</a>
-                        <a ng-click="edit()" class="btn btn-primary"><span class="fa fa-cog" aria-hidden="true"></span>Edit</a>
+                        <a ng-click="edit(product._id)" class="btn btn-primary"><span class="fa fa-cog" aria-hidden="true"></span>Edit</a>
+                        <br>
+                        <br>
                         <div class="service-icon">
-                            <img width="200" height="273" src="{{product.imgurl}}">
+                            <img width="200" height="200" src="{{product.imgurl}}">
                         </div>
                         <div class="service-desc">
                             <h5>{{product.title}}</h5>

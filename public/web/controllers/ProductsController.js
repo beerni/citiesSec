@@ -3,7 +3,7 @@
  */
 
 
-angular.module('cities').controller('ProductsController', ['$http', '$scope', function ($http, $scope) {
+angular.module('cities').controller('ProductsController', ['$http', '$scope','$location','$rootScope', function ($http, $scope,$location,$rootScope) {
     console.log('Products controller');
 
     $scope.noProducts = false;
@@ -31,5 +31,13 @@ angular.module('cities').controller('ProductsController', ['$http', '$scope', fu
             console.log("KAPASAOOOOOOO");
         })
     }
+
+    $scope.edit = function (id) {
+        window.localStorage.setItem('id',id);
+        $location.path('/edit')
+
+    }
+    
+
 
 }]);
