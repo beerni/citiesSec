@@ -426,6 +426,7 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
     };
 
 
+    //Funcions de prova amb token
     $scope.test = function () {
         $http.post(urlServer + '/user/loginTest', {}, $rootScope.token).success(function (res) {
         });
@@ -433,6 +434,21 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
     $scope.sinJSON = function () {
         $http.post(urlServer + '/user/loginTest', {}).success(function (res) {
             console.log(res);
+        }).error(function (err,status) {
+           if(status==403){
+               swal({
+                       title: "It seems you are not allowed!",
+                       text: "Redirecting to mean page.",
+                       timer: 2000,
+                       type: "error",
+                       showConfirmButton: false
+                   },
+                   function () {
+                       setTimeout(function () {
+                          $window.location.href = 'https://localhost:8080'
+                       }, 2000);
+                   });
+           }
         });
     }
 }]);

@@ -11,7 +11,7 @@ var base_url = "https://localhost:8080";
 
 //Add an ad
 router.post('/add', function (req, res) {
-    if (!req.body.imgurl) req.body.imgurl = base_url + 'img/ad-img/default_img.png';
+    if (!req.body.imgurl) req.body.imgurl = base_url + '/img/ad-img/default_img.png';
     var ad = new Ad({
         _id: crypto.randomBytes(16).toString("hex"),
         title: req.body.title,
@@ -45,7 +45,7 @@ router.post('/update/:id', function (req, res) {
     });
 
     Ad.findById(req.params.id, function (err, ad) {
-        ad.imgurl = base_url + '/web/img/ad-img/' + filname;
+        ad.imgurl = base_url + '/img/ad-img/' + filname +'.png';
 
         ad.save(function (err, a) {
             if (err) return res.send(500, err.message);

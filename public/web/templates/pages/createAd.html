@@ -1,0 +1,54 @@
+<head>
+    <link rel="stylesheet" href="../bower_components/ng-img-crop/compile/unminified/ng-img-crop.css"/>
+    <style>
+        .cropArea {
+            background: #E4E4E4;
+            overflow: hidden;
+            width:500px;
+            height:350px;
+        }
+    </style>
+</head>
+<section id="service" class="home-section color-dark bg-gray">
+    <div class="container marginbot-50">
+        <div class="row">
+            <!-- left column -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+
+            <div>Select an image file: <input type="file" id="fileInput" /></div>
+            <img width="200" height="200" ng-src="{{myCroppedImage}}" />
+    </div>
+    <!-- edit form column -->
+    <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+        <!--<h3>Personal info</h3>-->
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Title:</label>
+                <div class="col-lg-8">
+                    <input class="form-control" ng-model="product.title" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Description:</label>
+                <div class="col-lg-8">
+                    <input class="form-control" ng-model="product.description" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">Price:</label>
+                <div class="col-md-8">
+                    <select ng-name="n" ng-options="n for n in range_price(0,9999)" class="form-control" ng-model="product.price">
+                        <option value="">€</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <button ng-click="create()" class="btn btn-primary">Create Ad</button>
+                <a href="#shop" class="btn btn-danger" type="button">Cancel</a>
+            </div>
+        </form>
+    </div>
+            </div>
+        </div>
+</section>

@@ -29,7 +29,7 @@ module.exports = function (req, res, next) {
         }
     } else {
         console.log('NO TOKEN');
-        res.status(400).send('Token no válido');
+        res.status(403).send('Forbidden');
 
     }
 };
