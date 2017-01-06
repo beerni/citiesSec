@@ -1,4 +1,37 @@
-angular.module('cities', ['ngRoute', 'ngCookies'])
+angular.module('cities', ['ngRoute', 'ngCookies','btford.socket-io'])
+    .run(['$rootScope', 'socketio', function ($rootScope, socket){
+        
+    }])
+    .factory('socketio', ['$rootScope', function($rootScope){
+        var socketUrl = "https://localhost:3000";
+        var socket = null;
+        return {
+            on: function(eventName, callback){
+                socket.on(eventName, function () {
+                    var args = arguments;
+                    $rootScope.$apply(function(){
+                        callback.apply(socket, args);
+                    });
+                });
+            },
+            emit: function (eventName, data, callback) {
+                socket.emit(eventName, data, function () {
+                    var args= arguments;
+                    $rootScope.$apply(function () {
+                        if(callback){
+                            callback.apply(socket,args);
+                        }
+                    });
+                });
+            },
+            disconnect: function () {
+                socket.disconnect();
+            },
+            connect: function () {
+                socket = io.connect();
+            }
+        }
+    }])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
