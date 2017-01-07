@@ -37,7 +37,10 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop'])
                 templateUrl: 'templates/pages/chat.html',
                 controller: 'ChatController'
             })
-
+            .when('/details/:id', {
+                templateUrl: 'templates/pages/details.html',
+                controller: 'DetailsController'
+            })
 
 
     }])
