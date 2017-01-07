@@ -19,16 +19,16 @@
                 <div ng-repeat="product in products " class="col-md-4">
                         <div class="service-box">
                             <div class="service-icon">
-                                <img width="200" height="200" src="{{product.imgurl}}"></img>
+                                <img width="200" height="200" src="{{product.imgurl}}">
                             </div>
                             <div class="service-desc">
                                 <h5>{{product.title}}</h5>
                                 <div class="divider-header"></div>
-                                <h4>{{product.price}} €</h4>
-                                    {{product.description}}
-                                </p>
+                                <h4>{{product.price}}</h4>
+                                <div style=" height: 1em;line-height: 1em; overflow: hidden;">{{product.description}}</div>
+                                <br>
                                 <a href="#chat" class="btn btn-skin">Chat</a>
-                                <a href="#details/{{product._id}}" class="btn btn-skin">Detalles</a>
+                                <a href="#details/{{product._id}}" class="btn btn-skin">Details</a>
                             </div>
                         </div>
                         <br>
