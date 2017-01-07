@@ -7,7 +7,6 @@
 
     <!-- css -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
     <link href="css/nivo-lightbox.css" rel="stylesheet"/>
     <link href="css/nivo-lightbox-theme/default/default.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/sweetalert/dist/sweetalert.css">
@@ -56,7 +55,7 @@
 
 </head>
 
-<body>
+<body ng-controller="PrincipalController">
 <nav class="navbar navbar-default navbar-fixed-top transparent navbar-inverse" style="padding-bottom: 5px; padding-top: 5px">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -69,7 +68,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <!--<li><a href="" ng-init="userloggedInfo" ng-click="perfil(userLogged.username)"><span class="fa fa-cogs"></span> {{userLogged.username}}</a></li>-->
-            <li><a href="#/" ng-click="logOut()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a></li>
+            <li><a ng-click="logout()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a></li>
         </ul>
     </div>
 </nav>
