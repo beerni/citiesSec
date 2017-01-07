@@ -409,7 +409,8 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                     }
                 };
                 $cookies.put('tokenData', JSON.stringify(res));
-                $window.location.href = 'https://localhost:8080/#/loginTest'
+                $rootScope.isLogged = true;
+                $window.location.href = 'https://localhost:8080/#/shop'
 
             }).error(function (res) {
                 console.log(res);
