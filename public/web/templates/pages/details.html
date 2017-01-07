@@ -1,0 +1,61 @@
+<head>
+    <link rel="stylesheet" href="../bower_components/ng-img-crop/compile/unminified/ng-img-crop.css"/>
+    <link rel="stylesheet" href="../css/details.css">
+    <style>
+        .cropArea {
+            background: #E4E4E4;
+            overflow: hidden;
+            width:500px;
+            height:350px;
+        }
+    </style>
+</head>
+
+<section id="service" class="home-section color-dark bg-gray">
+    <div class="container marginbot-50">
+        <div class="row">
+            <div class="col-md-5">
+                <br><br>
+                <img width="480" height="480" src="{{product.imgurl}}">
+            </div>
+            <div class="col-md-7">
+                <br><br>
+                <section id="pricing-table">
+                    <div class="container">
+                        <div class="row">
+                            <div class="pricing">
+                                <div class="col-md-7 col-sm-12 col-xs-12">
+                                    <div class="pricing-table">
+                                        <div class="pricing-header">
+                                            <p class="pricing-title">{{product.title}}</p>
+                                            <p class="pricing-rate">{{product.price}}<span></span></p>
+                                            <a href="#chat" class="btn btn-custom">CHAT</a>
+                                        </div>
+
+                                        <div class="pricing-list">
+                                            <ul>
+                                                <h5 style="text-align:center;">Description</h5>
+                                                <p>{{product.description}}</p>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!--
+                <br><br><br>
+                <h1>{{product.title}}</h1>
+                <hr>
+
+                <h2>Price: {{product.price}}</h2>
+                <hr>
+
+                <h4>DESCRIPTION</h4>
+                <p>{{product.description}}</p>
+                -->
+            </div>
+        </div>
+    </div>
+</section>
