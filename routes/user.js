@@ -134,14 +134,16 @@ router.post('/register/anonimous', function (req, res, next) {
 router.post('/login', function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
-    anonimousUsers.findOne({username: username}, function (err, user) {
+    console.log(username);
+    anonimousUsers.find({username: username}, function (err, user) {
         console.log(user);
-        if (user == null) {
+        us = user[0];
+        if (us == null) {
             res.sendStatus(404);
         }
         else {
-            var salt = user.salt;
-            var userPass = user.password;
+            var salt = us.salt;
+            var userPass = us.password;
             var concat = password+'|'+salt;
             var concatHash = CryptoJS.SHA256(concat).toString();
             if(concatHash === userPass){
@@ -153,7 +155,7 @@ router.post('/login', function (req, res, next) {
                 res.json({
                     token : token,
                     expires: expires,
-                    user: user.toJSON()
+                    user: us.toJSON()
                 });
             }
             else {
