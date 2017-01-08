@@ -392,8 +392,6 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
     };
 
     $scope.login = function () {
-        var s = rsaInt.generateKeys(512);
-        console.log(s);
         if ($scope.user.username == undefined || $scope.user.password == undefined) {
             sweetAlert("Oops...", "Introduce something!", "error");
         }
@@ -408,7 +406,6 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                         'x-access-token': res.token
                     }
                 };
-                $cookies.put('user', JSON.stringify(login));
                 $cookies.put('tokenData', JSON.stringify(res));
                 $rootScope.isLogged = true;
                 $window.location.href = 'https://localhost:8080/#/shop'
@@ -454,5 +451,4 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
            }
         });
     }
-
 }]);

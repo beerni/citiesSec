@@ -16,9 +16,6 @@ var anonimousUserSchema = new Schema({
     },
     salt: {
         type: String
-    },
-    publicKey: {
-        type: String
     }
 });
 
