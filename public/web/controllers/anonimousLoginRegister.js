@@ -400,8 +400,6 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                 username: $scope.user.username,
                 password: $scope.user.password
             };
-            console.log(login);
-            console.log(urlServer);
             $http.post(urlServer + '/user/login', login).success(function (res) {
                 $rootScope.token = {
                     headers: {
