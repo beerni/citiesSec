@@ -8,10 +8,11 @@ var url = require('url');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
-var https2 = require('https').Server(app);
-var io = require('socket.io')(https2);
+var http2 = require('http').Server(app);
 var fs = require('fs');
+var io = require('socket.io')(http2);
 var mongoose = require('mongoose');
+var bignum = require('bignum');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var session      = require('express-session');
@@ -60,10 +61,11 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 https.createServer(options, app).listen(8080, function () {
     console.log('Started!');
 });
+http2.listen(3040);
 
 var users = [];
-
-io.on('connection', function(conn){
+io.sockets.on('connection', function(conn){
+    conn.emit('connection','user connected');
     conn.on('username', function(data, callback){
         if(data==null)
             callback(false);
@@ -80,21 +82,31 @@ io.on('connection', function(conn){
         }
         if (exit!=true){
             callback(true);
-            users.push(data);
-            for(var i = 0; i <users.length; i++){
-                if(users[i] == data){
-                    users[i].ws.push(conn);
-                }
-            }
+            var user = {};
+            user.username = data;
+            user.ws = [];
+            user.ws.push(conn);
+            users.push(user);
+            console.log(user.username);
+       
 
         }
+        console.log(data);
     });
-    conn.on('diffie', function(data){
-        if(users[i] == data.sendTo){
-            for(var j = 0; j<users[i].ws.length;j++){
-                users[i].ws[j].emit('diffie', data.msg);
+    conn.on('diffieInit', function(data){
+        p = bignum.prime(512 / 2);
+        g = 10;
+        for (var i = 0; i < users.length; i++) {
+            if (users[i] == data.sendTo) {
+                for (var j = 0; j < users[i].ws.length; j++) {
+                    users[i].ws[j].emit('diffieInit', {prime: p, mod: g});
+                }
+                conn.emit('diffieInit', {prime: p, mod: g});
+                exit = true;
             }
-            exit = true;
+        }
+        if(exit!=true){
+
         }
     });
     conn.on('messageChat', function(data){
@@ -117,5 +129,4 @@ io.on('connection', function(conn){
 
     })
 });
-https2.listen(3000);
 module.exports = app;

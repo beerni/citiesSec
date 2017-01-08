@@ -1,11 +1,30 @@
 angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btford.socket-io'])
-    .run(['$rootScope', 'socketio', function ($rootScope, socket){
-
+    .run(['$rootScope', 'socketio','$cookies', function ($rootScope, socket, $cookies) {
+        $rootScope.clientKeys = rsaInt.generateKeys(512);
+        if (angular.isUndefined($cookies.get('user'))){
+            $rootScope.isLogged=false;
+        }
+        else{
+            $rootScope.userLog = JSON.parse($cookies.get('user'));
+            $rootScope.isLogged = true;
+            socket.connect();
+            socket.on('connection', function (data) {
+                console.log(data);
+            });
+            socket.on('connection', function (data) {
+                socket.emit('username', $rootScope.userLog.username);
+            })
+        }
     }])
     .factory('socketio', ['$rootScope', function($rootScope){
-        var socketUrl = "https://localhost:3000";
+        var socketUrl = "http://localhost:3040";
         var socket = null;
         return {
+            connect: function () {
+                socket = io.connect(socketUrl, {reconnect: true});
+                console.log(socket);
+
+            },
             on: function(eventName, callback){
                 socket.on(eventName, function () {
                     var args = arguments;
@@ -26,13 +45,10 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
             },
             disconnect: function () {
                 socket.disconnect();
-            },
-            connect: function () {
-                socket = io.connect();
             }
         }
     }])
-    .config(['$routeProvider', function ($routeProvider) {
+    .config(['$routeProvider','$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'templates/pages/principal.html',
@@ -74,40 +90,5 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
                 templateUrl: 'templates/pages/details.html',
                 controller: 'DetailsController'
             })
-
-
-    }])
-    .run(['$rootScope', 'socketio', function ($rootScope, socket) {
-        $rootScope.clientKeys = rsaInt.generateKeys(512);
-    }])
-    .factory('socketio', ['$rootScope', function($rootScope){
-        var socketUrl = "https://localhost:3000";
-        var socket = null;
-        return {
-            on: function(eventName, callback){
-                socket.on(eventName, function () {
-                    var args = arguments;
-                    $rootScope.$apply(function(){
-                        callback.apply(socket, args);
-                    });
-                });
-            },
-            emit: function (eventName, data, callback) {
-                socket.emit(eventName, data, function () {
-                    var args= arguments;
-                    $rootScope.$apply(function () {
-                        if(callback){
-                            callback.apply(socket,args);
-                        }
-                    });
-                });
-            },
-            disconnect: function () {
-                socket.disconnect();
-            },
-            connect: function () {
-                socket = io.connect();
-            }
-        }
     }])
 
