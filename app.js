@@ -8,9 +8,7 @@ var url = require('url');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
-var http2 = require('http').Server(app);
-var fs = require('fs');
-var io = require('socket.io')(http2);
+var http2 = require('https');
 var mongoose = require('mongoose');
 var bignum = require('bignum');
 var passport = require('passport');
@@ -61,10 +59,12 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 https.createServer(options, app).listen(8080, function () {
     console.log('Started!');
 });
-http2.listen(3040);
 
+var app2 = http2.createServer(options);
+io = require('socket.io').listen(app2);
+app2.listen(3040);
 var users = [];
-io.sockets.on('connection', function(conn){
+io.on('connection', function(conn){
     conn.emit('connection','user connected');
     conn.on('username', function(data, callback){
         if(data==null)

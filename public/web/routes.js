@@ -18,7 +18,7 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
         }
     }])
     .factory('socketio', ['$rootScope', function($rootScope){
-        var socketUrl = "http://localhost:3040";
+        var socketUrl = "https://localhost:3040";
         var socket = null;
         return {
             connect: function () {
