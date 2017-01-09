@@ -1,10 +1,11 @@
 angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btford.socket-io'])
-    .run(['$rootScope', 'socketio','$cookies', function ($rootScope, socket, $cookies) {
+    .run(['$rootScope', 'socketio','$cookies','$window', function ($rootScope, socket, $cookies,$window) {
         $rootScope.clientKeys = rsaInt.generateKeys(512);
         if (angular.isUndefined($cookies.get('user'))){
             $rootScope.isLogged=false;
         }
         else{
+            $window.location.href = 'https://localhost:8080/#/shop'
             $rootScope.userLog = JSON.parse($cookies.get('user'));
             $rootScope.isLogged = true;
             socket.connect();
