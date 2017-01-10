@@ -60,10 +60,16 @@ https.createServer(options, app).listen(8080, function () {
     console.log('Started!');
 });
 
+var chat = require('./models/chat.js');
+var chatMessage = require('./models/chatMessage.js');
+
 var app2 = http2.createServer(options);
 io = require('socket.io').listen(app2);
 app2.listen(3040);
 var users = [];
+var user = {};
+user.user='';
+user.ws = [];
 io.on('connection', function(conn){
     conn.emit('connection','user connected');
     conn.on('username', function(data, callback){
@@ -71,8 +77,8 @@ io.on('connection', function(conn){
             callback(false);
         else{
             var exit = false;
-            for(var i = 0; users.length; i++) {
-                if(users[i] == data){
+            for(var i = 0; i<users.length; i++) {
+                if(users[i].user == data){
                     users[i].ws.push(conn);
                     callback(false);
                     exit = true;
@@ -82,30 +88,76 @@ io.on('connection', function(conn){
         }
         if (exit!=true){
             callback(true);
-            var user = {};
-            user.username = data;
-            user.ws = [];
+            user.user = data;
             user.ws.push(conn);
             users.push(user);
-            console.log(user.username);
-       
-
         }
         console.log(data);
     });
     conn.on('diffieInit', function(data){
-        p = bignum.prime(512 / 2);
-        g = 10;
-        for (var i = 0; i < users.length; i++) {
-            if (users[i] == data.sendTo) {
-                for (var j = 0; j < users[i].ws.length; j++) {
-                    users[i].ws[j].emit('diffieInit', {prime: p, mod: g});
+        var exit = false;
+        var cha;
+        chat.find({idProduct: data.id}).exec(function(err,chati) {
+            if (err) {
+            }
+            else {
+                var num = 0;
+                if (chati.length != 0) {
+                    for (var i = 0; i < chati.length; i++) {
+                        for (var j = 0; j < chati[i].username.length; j++)
+                            if (chati[i].username[j] == data.user || chati[i].username[j] == data.useri) {
+                                num = num+1;
+                                if(num==2){
+                                    cha = chati[i].username;
+                                }
+                            }
+                    }
+                    if (num < 2) {
+                        num = 0;
+                    }
                 }
-                conn.emit('diffieInit', {prime: p, mod: g});
+                if (num < 2) {
+                    var newChat = new chat();
+                    newChat.username.push(data.user);
+                    newChat.username.push(data.useri);
+                    newChat.idProduct = data.id;
+                    newChat.save(function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    });
+                    cha = newChat.username;
+                }
+            }
+
+            p = bignum.prime(64 / 2);
+            g = 5;
+            for (var i = 0; i < cha.length; i++) {
+                if (cha[i] == data.user) {
+                    for (var j = 0; j < users[i].ws.length; j++) {
+                        users[i].ws[j].emit('diffieInit', {prime: p.toString(), mod: g,id: data.id,user: data.useri});
+                    }
+                    conn.emit('diffieInit', {prime: p.toString(), mod: g, id: data.id, user: data.user});
+                    exit = true;
+                }
+            }
+            if (exit != true) {
+
+            }
+        });
+    });
+    conn.on('diffie', function(data){
+        var exit = false;
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].user == data.user) {
+                for (var j = 0; j < users[i].ws.length; j++) {
+                    users[i].ws[j].emit('diffie', {prime: data.prime, mod: data.mod,id: data.id,user: data.user, module: data.module});
+                }
+                conn.emit('diffie', {prime: data.prime, mod: data.mod,id: data.id,user: data.user, module: data.module});
                 exit = true;
             }
         }
-        if(exit!=true){
+        if (exit != true) {
 
         }
     });

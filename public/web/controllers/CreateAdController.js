@@ -2,11 +2,11 @@
  * Created by Joe on 5/1/17.
  */
 
-angular.module('cities').controller('CreateadController', ['$http', '$scope','$location', function ($http, $scope,$location) {
+angular.module('cities').controller('CreateadController', ['$http', '$scope','$location','$rootScope', function ($http, $scope,$location,$rootScope) {
 
     $scope.myCroppedImage='';
     $scope.product = {};
-    $scope.product.username = 'lobo4';
+    $scope.product.username = $rootScope.userLog.username;
 
     //PARA QUE SE MUESTRE LA IMAGEN EN MODO PREVIEW
     var handleFileSelect=function(evt) {

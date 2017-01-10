@@ -11,9 +11,6 @@ var chatSchema = new Schema({
     username: [{
         type: String
     }],
-    txt: {
-        type: String
-    },
     idProduct: {
         type: String
     }
