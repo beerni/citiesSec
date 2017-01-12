@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var bignum = require('bignum');
+var jwtauth = require('../config/jwtauth');
+
 
 var keys = require('./keys.js');
 serverKeys = keys.getKeys();
@@ -52,5 +54,9 @@ router.post('/challenge', function (req, res) {
     else {
         res.status(400).send('Error')
     }
+});
+
+router.post('/validate',jwtauth, function (req, res) {
+    res.status(200).send('OK');
 });
 module.exports = router;
