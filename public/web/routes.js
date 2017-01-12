@@ -1,7 +1,4 @@
 angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btford.socket-io'])
-    .run(['$rootScope', 'socketio', function ($rootScope, socket){
-
-    }])
     .factory('socketio', ['$rootScope', function($rootScope){
         var socketUrl = "https://localhost:3000";
         var socket = null;
@@ -77,8 +74,31 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
 
 
     }])
-    .run(['$rootScope', 'socketio', function ($rootScope, socket) {
+    .run(['$rootScope', 'socketio','$cookies','$http','$location', function ($rootScope, ocket,$cookies,$http,$location) {
         $rootScope.clientKeys = rsaInt.generateKeys(512);
+        if(angular.isUndefined($cookies.getObject('tokenData'))){
+            console.log("NO HAY TOKEN")
+            $rootScope.isLogged=false;
+            $location.path('/');
+        }
+        else{
+            var header = {
+                headers: {
+                    'x-access-token': JSON.parse($cookies.get('tokenData')).token
+                }
+            };
+            $http.post('https://localhost:8080/api/validate',null,header).success(function(res){
+                if(res=='OK'){
+                    console.log("OK");
+                    $rootScope.isLogged=true;
+                }
+                else{
+                    console.log("NO TOKEN");
+                    $rootScope.isLogged=false;
+                    $location.path('/login');
+                }
+            })
+        }
     }])
     .factory('socketio', ['$rootScope', function($rootScope){
         var socketUrl = "https://localhost:3000";

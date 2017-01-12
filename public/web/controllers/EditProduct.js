@@ -1,9 +1,31 @@
 /**
  * Created by Joe on 5/1/17.
  */
-angular.module('cities').controller('EditProduct', ['$http', '$scope','$location', function ($http, $scope,$location) {
+angular.module('cities').controller('EditProduct', ['$http', '$scope','$location','$cookies','$rootScope', function ($http, $scope,$location,$cookies,$rootScope) {
     console.log('Edit Product controller');
 
+    if(angular.isUndefined($cookies.getObject('tokenData'))){
+        $rootScope.isLogged=false;
+        $location.path('/');
+    }
+    else{
+        var header = {
+            headers: {
+                'x-access-token': JSON.parse($cookies.get('tokenData')).token
+            }
+        };
+        $http.post('https://localhost:8080/api/validate',null,header).success(function(res){
+            if(res=='OK'){
+                console.log("OK");
+                $rootScope.isLogged=true;
+            }
+            else{
+                console.log("NO TOKEN");
+                $rootScope.isLogged=false;
+                $location.path('/login');
+            }
+        })
+    }
 
     $scope.product ={};
     init = function () {
