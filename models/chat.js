@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 
 
 Schema = mongoose.Schema;
+var chat = mongoose.model('Ad');
 
 var chatSchema = new Schema({
 
@@ -12,6 +13,9 @@ var chatSchema = new Schema({
         type: String
     }],
     idProduct: {
+        type: String
+    },
+    productName: {
         type: String
     }
 });

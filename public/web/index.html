@@ -38,6 +38,8 @@
     <script src="bower_components/crypto-js/crypto-js.js"></script>
     <script src="helpers/rsa-biginteger.js"></script>
     <script src="helpers/rsa-complement.js"></script>
+    <script src="helpers/convert.js"></script>
+
 
     <script src="routes.js"></script>
 
@@ -63,14 +65,14 @@
         <div class="navbar-header">
             <a class="navbar-brand">Anonymous Shop</a>
         </div>
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav" ng-if="isLogged">
             <li><a href="#shop" ><span class="glyphicon glyphicon-home"></span>Home</a></li>
             <li><a href="#products"><span class="glyphicon glyphicon-shopping-cart"></span>My products</a></li>
-
+            <li><a href="#chat"><span class="glyphicon glyphicon-shopping-cart"></span>Chat({{idChat.length}})</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <!--<li><a href="" ng-init="userloggedInfo" ng-click="perfil(userLogged.username)"><span class="fa fa-cogs"></span> {{userLogged.username}}</a></li>-->
-            <li><a ng-click="logout()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a></li>
+            <li ng-if="isLogged"><a ng-click="logout()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a></li>
         </ul>
     </div>
 </nav>

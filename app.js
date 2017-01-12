@@ -34,10 +34,12 @@ app.use(express.static(path.join(__dirname, 'public/web')));
 var routes = require('./routes');
 var user = require('./routes/user');
 var ad = require('./routes/ad');
+var chatt = require('./routes/chat');
 
 app.use('/api', routes);
 app.use('/api/user', user);
 app.use('/api/ad', ad);
+app.use('/api/chat', chatt);
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -121,6 +123,7 @@ io.on('connection', function(conn){
                     newChat.username.push(data.user);
                     newChat.username.push(data.useri);
                     newChat.idProduct = data.id;
+                    newChat.productName = data.name;
                     newChat.save(function(err){
                         if(err){
                             console.log(err);
@@ -164,15 +167,12 @@ io.on('connection', function(conn){
     conn.on('messageChat', function(data){
         var exit = false;
         for (var i = 0; i < users.length; i++){
-            if(users[i] == data.sendTo){
+            if(users[i].user == data.user){
                 for(var j = 0; j<users[i].ws.length;j++){
-                    users[i].ws[j].emit('messageChat', data.msg);
+                    users[i].ws[j].emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
                 }
                 exit = true;
-            }else if(users[i]==data.sendBy){
-                for(var j = 0; j<users[i].ws.length;j++){
-                    users[i].ws[j].emit('messageChat', data.msg);
-                }
+                conn.emit('messageChat', {msg: data.msg, user:data.user, id: data.id});
             }
         }
         if(exit!=true){

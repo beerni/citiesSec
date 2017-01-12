@@ -16,9 +16,8 @@ angular.module('cities').controller('DetailsController', ['$http', '$scope','$ro
         })
     };
     $scope.chat = function(){
-        socket.emit('diffieInit', {id:$routeParams.id, user: $scope.product.username, useri: $rootScope.userLog.username});
-        $window.location.href='https://localhost:8080/#/chat';
-
+        socket.emit('diffieInit', {id:$routeParams.id, user: $scope.product.username, useri: $rootScope.userLog.username, name: $scope.product.title});
+        $window.location.href='https://localhost:8080/#/chat/'+$routeParams.id;
     }
 
     init();

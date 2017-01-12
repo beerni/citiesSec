@@ -8,47 +8,65 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
             $window.location.href = 'https://localhost:8080/#/shop';
             $rootScope.userLog = JSON.parse($cookies.get('user'));
             $rootScope.isLogged = true;
-            socket.connect();
-            $rootScope.chat = [];
+            $rootScope.chatMens = [];
+            $rootScope.keyChats = [];
             $rootScope.keys = {};
             $rootScope.keys.module = '';
             $rootScope.keys.random = '';
             $rootScope.keys.id = '';
             $rootScope.keys.username = '';
             $rootScope.keys.secret = '';
+            $rootScope.idChat=[];
 
             if($window.location.href!="https://localhost:8080"){
+                socket.connect();
                 $cookies.remove('user');
             }
             socket.on('connection', function (data) {
                 socket.emit('username', $rootScope.userLog.username);
             });
             socket.on('diffieInit', function(data){
-                //$rootScope.keys.random = getRandomInt(1, data.prime-1);
                 $rootScope.keys.random = bigInt.randBetween(1, 10);
-                $rootScope.keys.module = getModule(data.prime, data.mod, $rootScope.keys.random);
+                $rootScope.keys.module = operations.getModule(data.prime, data.mod, $rootScope.keys.random);
                 console.log($rootScope.keys.module);
                 $rootScope.keys.username = data.user;
                 $rootScope.keys.id = data.id;
                 socket.emit('diffie', {module: $rootScope.keys.module, id: data.id, user: data.user, mod: data.mod, prime:data.prime});
             });
             socket.on('diffie', function(data){
-                $rootScope.keys.secret = getModule(data.prime, data.mod, data.module);
-                $rootScope.chat.push($rootScope.keys);
+                $rootScope.keys.secret = operations.getModule(data.prime, data.mod, data.module);
+                for(var i = 0; i < $rootScope.keyChats.length; i++){
+                    if($rootScope.keyChats[i].id == data.id){
+                        $rootScope.keyChats.splice(i, 1);
+                    }
+                }
+                $rootScope.keyChats.push($rootScope.keys);
                 console.log($rootScope.keys.secret);
             });
+            socket.on('messageChat', function(data){
+                console.log(data.msg);
+                var msgDes = data.msg;
+                msgDes = bigInt(data.msg, 16)/$rootScope.keys.secret;
+                var a = {};
+                a.msg = operations.hex2a(msgDes.toString(16));
+                a.user = data.user;
+                a.id = data.id;
+                $rootScope.chatMens.push(a);
+                var esta = false;
+                for(var i = 0;i < $rootScope.chatMens.length; i++ ){
+                    for (var j = 0; j<$rootScope.idChat.length;j++){
+                        if ($rootScope.idChat[j]==$rootScope.chatMens[i].id){
+                            esta=true;
+                        }
+                    }
+                    if(esta==false){
+                        $rootScope.idChat.push($rootScope.chatMens[i]);
+                    }
+                    esta = false;
+                }
+            });
 
-            function getRandomInt(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
-            function getModule(p, g, number){
-                console.log(g);
-                console.log(number);
-                var a = bigInt(g).pow(number);
-                console.log(a);
-                console.log(a.mod(p));
-                return a.mod(p)
-            }
+
         }
     }])
     .factory('socketio', ['$rootScope', function($rootScope){
@@ -118,6 +136,10 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
                 controller: 'ProductsController'
             })
             .when('/chat', {
+                templateUrl: 'templates/pages/chat.html',
+                controller: 'ChatController'
+            })
+            .when('/chat/:id', {
                 templateUrl: 'templates/pages/chat.html',
                 controller: 'ChatController'
             })
