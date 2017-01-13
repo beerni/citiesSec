@@ -224,6 +224,7 @@ angular.module('cities').controller('LoginController', ['$http', '$scope', '$win
 
     function register() {
         var username, password;
+        var s = rsaInt.generateKeys(512);
         swal({
                 title: "Username",
                 text: "Write your anonimous username",
@@ -268,7 +269,10 @@ angular.module('cities').controller('LoginController', ['$http', '$scope', '$win
                                     $http.post(urlServer + '/register/anonimous', {
                                         username: username,
                                         password: password,
-                                        checkUsername: false
+                                        checkUsername: false,
+                                        bits: s.publicKey.bits,
+                                        n: s.publicKey.n,
+                                        e: s.publicKey.e
                                     }).success(function (res) {
                                         $http.get('https://localhost:8085/ttp/publication').success(function (res) {
                                             if (username === res.username && password === password) {

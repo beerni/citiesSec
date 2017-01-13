@@ -45,18 +45,25 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
             });
             socket.on('messageChat', function(data){
                 console.log(data.msg);
-                var msgDes = data.msg;
-                msgDes = bigInt(data.msg, 16)/$rootScope.keys.secret;
+                var txt = '';
+                for(var i = 0; i<data.msg.length;i++){
+                    var msgDes = bigInt(data.msg[i], 16)/$rootScope.keys.secret;
+                    txt = txt+operations.hex2a(msgDes.toString(16));
+                }
                 var a = {};
-                a.msg = operations.hex2a(msgDes.toString(16));
+                a.msg = txt;
                 a.user = data.user;
                 a.id = data.id;
                 $rootScope.chatMens.push(a);
                 var esta = false;
                 for(var i = 0;i < $rootScope.chatMens.length; i++ ){
                     for (var j = 0; j<$rootScope.idChat.length;j++){
-                        if ($rootScope.idChat[j]==$rootScope.chatMens[i].id){
-                            esta=true;
+                        if ($rootScope.idChat[j].id==$rootScope.chatMens[i].id){
+                            if($rootScope.idChat[j].user==$rootScope.chatMens[i].user)
+                                esta=true;
+                            else if($rootScope.chatMens[i].user==$rootScope.userLog) {
+                                esta = true;
+                            }
                         }
                     }
                     if(esta==false){
@@ -64,6 +71,8 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
                     }
                     esta = false;
                 }
+                console.log($rootScope.idChat);
+                console.log($rootScope.chatMens);
             });
 
 
@@ -75,8 +84,6 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
         return {
             connect: function () {
                 socket = io.connect(socketUrl, {reconnect: true});
-                console.log(socket);
-
             },
             on: function(eventName, callback){
                 socket.on(eventName, function () {

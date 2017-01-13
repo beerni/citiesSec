@@ -17,8 +17,18 @@ var anonimousUserSchema = new Schema({
     salt: {
         type: String
     },
-    publicKey: {
-        type: String
+    bits: {
+            type: String
+    },
+    n: {
+            value: [{type: Number}],
+            sign: {type: Boolean},
+            isSmall: {type: Boolean}
+    },
+    e: {
+            value: {type: Number},
+            sign: {type: Boolean},
+            isSmall: {type: Boolean}
     }
 });
 

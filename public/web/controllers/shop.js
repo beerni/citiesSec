@@ -16,4 +16,17 @@ angular.module('cities').controller('ShopController', ['$http', '$scope','$cooki
         $window.location.href='https://localhost:8080/#/chat/'+id;
     }
 
+    if(angular.isUndefined($cookies.get('tokenData'))||$cookies.get('tokenData').bits==undefined||$cookies.get('tokenData').user.username!=$rootScope.userLog.username){
+        $http.post('https://localhost:8080/api/user/update',{
+            user: $rootScope.userLog.username,
+            bits: $rootScope.clientKeys.publicKey.bits,
+            n: $rootScope.clientKeys.publicKey.n,
+            e: $rootScope.clientKeys.publicKey.e
+        }).success(function (res) {
+            console.log(res);
+            $scope.products = res;
+        }).error(function (res) {
+            console.log("KAPASAOOOOOOO");
+        })
+    }
 }]);

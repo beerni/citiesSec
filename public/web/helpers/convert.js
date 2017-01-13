@@ -19,5 +19,18 @@ operations = {
         hex += '' + str.charCodeAt(i).toString(16);
     }
     return hex;
+    },
+    correct: function(str){
+        var ha = str;
+        var a = ha.length;
+        var finish= false;
+        var comp = false;
+        var s = 0;
+        var ja = [];
+        for(var j = 0; j < a;j++){
+            ja.push(ha.substring(s, s+1));
+            s=s+1;
+        }
+        return ja;
     }
 };

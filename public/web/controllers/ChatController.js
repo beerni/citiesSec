@@ -8,6 +8,7 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     $scope.userChat='';
     $scope.allChats=[];
     $scope.chatMsg=[];
+    var texto = [];
     $scope.seeChat=false;
     $scope.change = function(id){
         $window.location.href='https://localhost:8080/#/chat/'+id;
@@ -21,10 +22,14 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         }
     }
     socket.on('messageChat', function(data){
-        console.log(data.msg);
-        var msgDes = bigInt(data.msg, 16)/$rootScope.keys.secret;
+        var txt = '';
+        for(var i = 0; i<data.msg.length;i++){
+            var msgDes = bigInt(data.msg[i], 16)/$rootScope.keys.secret;
+            txt = txt+operations.hex2a(msgDes.toString(16));
+        }
+        console.log(txt);
         var a = {};
-        a.msg = operations.hex2a(msgDes.toString(16));
+        a.msg = txt;
         a.user = data.user;
         a.id = data.id;
         if(data.id==$routeParams.id){
@@ -32,10 +37,14 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         }
     });
     $scope.send = function () {
-        console.log($scope.txt.msg);
-        var msgEnc = bigInt(operations.convertToHex($scope.txt.msg),16);
-        msgEnc = msgEnc*$rootScope.keys.secret;
-        socket.emit('messageChat', {msg: msgEnc.toString(16), user: $rootScope.userLog.username, id: $routeParams.id});
+        texto = operations.correct($scope.txt.msg);
+        var txtenv=[]
+        for(var i = 0; i < texto.length; i++){
+            var msgEnc = bigInt(operations.convertToHex(texto[i]),16);
+            msgEnc = msgEnc*$rootScope.keys.secret;
+            txtenv.push(msgEnc.toString(16))
+        }
+        socket.emit('messageChat', {msg: txtenv, user: $rootScope.userLog.username, id: $routeParams.id});
         $scope.txt.msg='';
     };
     $http.get('https://localhost:8080/api/chat/'+$rootScope.userLog.username).success(function (res) {
