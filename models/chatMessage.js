@@ -17,6 +17,9 @@ var chatMessageSchema = new Schema({
     },
     chatid: {
         type: mongoose.Schema.Types.ObjectId, ref: "Chat"
+    },
+    crypted: {
+        type: Boolean
     }
 });
 

@@ -64,6 +64,7 @@ https.createServer(options, app).listen(8080, function () {
 
 var chat = require('./models/chat.js');
 var chatMessage = require('./models/chatMessage.js');
+var anonimousUser = require('./models/anonimousUser');
 
 var app2 = http2.createServer(options);
 io = require('socket.io').listen(app2);
@@ -99,7 +100,8 @@ io.on('connection', function(conn){
     conn.on('diffieInit', function(data){
         var exit = false;
         var cha;
-        chat.find({idProduct: data.id}).exec(function(err,chati) {
+        var idChat;
+        chat.find({_id: data.id}).exec(function(err,chati) {
             if (err) {
             }
             else {
@@ -111,6 +113,7 @@ io.on('connection', function(conn){
                                 num = num+1;
                                 if(num==2){
                                     cha = chati[i].username;
+                                    idChat = chati[i]._id;
                                 }
                             }
                     }
@@ -122,7 +125,7 @@ io.on('connection', function(conn){
                     var newChat = new chat();
                     newChat.username.push(data.user);
                     newChat.username.push(data.useri);
-                    newChat.idProduct = data.id;
+                    newChat.idProduct = data.idProduct;
                     newChat.productName = data.name;
                     newChat.save(function(err){
                         if(err){
@@ -130,6 +133,7 @@ io.on('connection', function(conn){
                         }
                     });
                     cha = newChat.username;
+                    idChat = newChat._id;
                 }
             }
 
@@ -138,17 +142,37 @@ io.on('connection', function(conn){
             for (var i = 0; i < cha.length; i++) {
                 if (cha[i] == data.user) {
                     for (var j = 0; j < users[i].ws.length; j++) {
-                        users[i].ws[j].emit('diffieInit', {prime: p.toString(), mod: g,id: data.id,user: data.useri});
+                        users[i].ws[j].emit('diffieInit', {prime: p.toString(), mod: g,id: data.id,user: data.useri, idChat: idChat});
                     }
-                    conn.emit('diffieInit', {prime: p.toString(), mod: g, id: data.id, user: data.user});
+                    conn.emit('diffieInit', {prime: p.toString(), mod: g, id: data.id, user: data.user, idChat: idChat});
                     exit = true;
                 }
             }
             if (exit != true) {
-
+                anonimousUser.findOne({username: data.user}).exec(function(err, userr){
+                    if(err){}
+                    else{
+                        if(userr.length!=0){
+                            conn.emit('notConnected', {e:userr[0].e, n:userr[0].n, user: data.user, id:data.id, idChat:idChat})
+                        }
+                    }
+                })
             }
         });
     });
+    conn.on('publicKeyChat', function(data){
+        console.log(data.msg);
+        var newmessage = new chatMessage();
+        newmessage.username = data.user;
+        newmessage.chatid = data.id;
+        newmessage.message = data.msg;
+        newmessage.crypted = true;
+        newmessage.save(function(err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    })
     conn.on('diffie', function(data){
         var exit = false;
         for (var i = 0; i < users.length; i++) {
@@ -161,24 +185,75 @@ io.on('connection', function(conn){
             }
         }
         if (exit != true) {
-
+            anonimousUser.findOne({username: data.user}).exec(function(err, userr){
+                if(err){}
+                else{
+                    if(userr=undefined){
+                        conn.emit('notConnected', {e:userr[0].e, n:userr[0].n, user: data.user, id:data.id, idChat:idChat})
+                    }
+                }
+            })
         }
     });
     conn.on('messageChat', function(data){
         var exit = false;
-        for (var i = 0; i < users.length; i++){
-            if(users[i].user == data.user){
-                for(var j = 0; j<users[i].ws.length;j++){
-                    users[i].ws[j].emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
+        var userrr = '';
+        var idChat = '';
+        chat.find({_id: data.id}).exec(function(err, use){
+            if(err){}
+            else {
+                if (use.length != 0) {
+                    for (var s = 0; s < use[0].username.length; s++) {
+                        if (use[0].username[s] == data.useri) {
+                            userrr = use[0].username[s];
+                        }
+                    }
                 }
-                exit = true;
-                conn.emit('messageChat', {msg: data.msg, user:data.user, id: data.id});
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].user == userrr) {
+                        for (var j = 0; j < users[i].ws.length; j++) {
+                            users[i].ws[j].emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
+                        }
+                        exit = true;
+                        conn.emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
+                    }
+                }
+                if (exit != true) {
+                    anonimousUser.findOne({username: data.user}).exec(function (err, userr) {
+                        if (err) {
+                        }
+                        else {
+                            if (userr != undefined) {
+                                conn.emit('publicKeyChat', {
+                                    public: {e: userr.e, n: userr.n},
+                                    user: data.user,
+                                    id: data.id,
+                                    msg: data.msg
+                                });
+                            }
+                        }
+                    })
+                }
+            }
+        })
+
+    })
+    conn.on('disconnect', function(data){
+        for(var i = 0; i< users.length; i++){
+            /*for(var j =0; j < users[j].ws.length; j++){
+
+                if(users[i].ws[j]==conn){
+                    users[i].ws.splice(j,1);
+                    if(users[i].ws==""){
+                        users.splice(i,1)
+                    }
+                    break;
+                }
+            }*/
+            if(users[i].user==data.user){
+                users.splice(i,1);
             }
         }
-        if(exit!=true){
-
-        }
-
     })
 });
 module.exports = app;

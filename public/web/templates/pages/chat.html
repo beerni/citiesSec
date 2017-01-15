@@ -15,8 +15,9 @@
                         </ul>
                     </div>
                     <div class="member_list">
-                        <ul class="list-unstyled" ng-repeat="all in allChats">
-                            <li class="left clearfix" ng-if="convers" ng-click="change(all.idProduct)">
+                        <ul class="list-unstyled">
+                            <div ng-repeat="all in allChats">
+                            <li class="left clearfix" ng-if="convers" ng-click="change(all._id)">
                      <span class="chat-img pull-left">
                      </span>
                                 <div class="chat-body clearfix">
@@ -28,6 +29,7 @@
                                     </div>
                                 </div>
                             </li>
+                                </div>
                             <li class="left clearfix" ng-if="!convers">
                      <span class="chat-img pull-left">
                      </span>
@@ -52,16 +54,16 @@
                         <li class="left clearfix" ng-if="userLog.username==chati.user">
                      <span class="chat-img1 pull-left">
                      </span>
+                            <div class="chat_time pull-right">{{chati.user}}</div>
                             <div class="chat-body1 clearfix">
-                                <div class="chat_time pull-right">{{chati.user}}</div>
                                 <p>{{chati.msg}}</p>
                             </div>
                         </li>
                         <li class="left clearfix admin_chat" ng-if="userLog.username!=chati.user">
                      <span class="chat-img1 pull-right">
                      </span>
+                            <div class="chat_time pull-left">{{chati.user}}</div>
                             <div class="chat-body1 clearfix">
-                                <div class="chat_time pull-left">{{chati.user}}</div>
                                 <p>{{chati.msg}}</p>
                             </div>
                         </li>
