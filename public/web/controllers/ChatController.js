@@ -100,17 +100,17 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         var dd='';
         var d = JSON.parse($cookies.get('secretss')).privateKey.d.value;
         for (var s = 0; s < n.length; s++) {
-            nn = nn + n[s];
+            nn = n[s]+nn;
         }
         for (var j = 0; j < d.length; j++) {
-            dd = dd + d[j];
+            dd = d[j]+dd;
         };
         for(var i = 0; i<res.length;i++){
             if(res[i].crypted==true){
-                console.log(res[i]);
                 console.log(JSON.parse($cookies.get('secretss')));
-                console.log($cookies.get('secretss').n);
                 var a = bigInt(res[i].message, 16);
+                var t = a.modPow(new bigInt(dd),new bigInt(nn));
+                console.log(bigInt(nn));
                 res[i].message=operations.hex2a(a.modPow(new bigInt(dd),new bigInt(nn)).toString(16))
             }
             var txt = {};

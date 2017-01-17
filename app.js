@@ -161,7 +161,6 @@ io.on('connection', function(conn){
         });
     });
     conn.on('publicKeyChat', function(data){
-        console.log(data.msg);
         var newmessage = new chatMessage();
         newmessage.username = data.user;
         newmessage.chatid = data.id;
@@ -204,6 +203,7 @@ io.on('connection', function(conn){
             else {
                 if (use.length != 0) {
                     for (var s = 0; s < use[0].username.length; s++) {
+
                         if (use[0].username[s] == data.useri) {
                             userrr = use[0].username[s];
                         }
@@ -219,16 +219,20 @@ io.on('connection', function(conn){
                     }
                 }
                 if (exit != true) {
-                    anonimousUser.findOne({username: data.user}).exec(function (err, userr) {
+                    console.log("no esta");
+                    anonimousUser.findOne({username: data.useri}).exec(function (err, userr) {
                         if (err) {
                         }
                         else {
                             if (userr != undefined) {
+                                console.log('e: '+ userr.e.value);
+                                console.log('n: '+ userr.n.value);
                                 conn.emit('publicKeyChat', {
                                     public: {e: userr.e, n: userr.n},
                                     user: data.user,
                                     id: data.id,
-                                    msg: data.msg
+                                    msg: data.msg,
+                                    useri: data.useri
                                 });
                             }
                         }
