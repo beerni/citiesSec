@@ -95,23 +95,13 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         console.log("KAPASAOOOOOOO");
     });
     $http.get('https://localhost:8080/api/chat/msg/'+$rootScope.userLog.username).success(function (res) {
-        var nn = '';
-        var n = JSON.parse($cookies.get('secretss')).n.value;
-        var dd='';
-        var d = JSON.parse($cookies.get('secretss')).privateKey.d.value;
-        for (var s = 0; s < n.length; s++) {
-            nn = n[s]+nn;
-        }
-        for (var j = 0; j < d.length; j++) {
-            dd = d[j]+dd;
-        };
+        console.log(JSON.parse($cookies.get('secretss')));
+        var n = JSON.parse($cookies.get('secretss')).n;
+        var d = JSON.parse($cookies.get('secretss')).d;
         for(var i = 0; i<res.length;i++){
             if(res[i].crypted==true){
-                console.log(JSON.parse($cookies.get('secretss')));
                 var a = bigInt(res[i].message, 16);
-                var t = a.modPow(new bigInt(dd),new bigInt(nn));
-                console.log(bigInt(nn));
-                res[i].message=operations.hex2a(a.modPow(new bigInt(dd),new bigInt(nn)).toString(16))
+                res[i].message=operations.hex2a(a.modPow(new bigInt(d),new bigInt(n)).toString(16))
             }
             var txt = {};
             txt.user = res[i].username;

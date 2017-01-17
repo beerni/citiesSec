@@ -102,13 +102,7 @@ angular.module('cities', ['ngRoute', 'ngCookies','ui.bootstrap','ngImgCrop','btf
                     };
                     console.log(txt);
                     var msg = bigInt(operations.convertToHex(txt), 16);
-                    var nn = '';
-                    console.log(data.public.n.value);
-                    for (var s = 0; s < data.public.n.value.length; s++) {
-                        nn = data.public.n.value[s] + nn;
-                    }
-                    console.log(nn);
-                    var cryptmsg = msg.modPow(new bigInt(data.public.e.value), new bigInt(nn));
+                    var cryptmsg = msg.modPow(new bigInt(data.public.e), new bigInt(data.public.n));
                     console.log(cryptmsg);
                     socket.emit('publicKeyChat', {
                         msg: cryptmsg.toString(16),

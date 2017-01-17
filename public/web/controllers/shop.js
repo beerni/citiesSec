@@ -23,18 +23,17 @@ angular.module('cities').controller('ShopController', ['$http', '$scope','$cooki
         $http.post('https://localhost:8080/api/user/update',{
             user: $rootScope.userLog.username,
             bits: $rootScope.clientKeys.publicKey.bits,
-            n: $rootScope.clientKeys.publicKey.n,
-            e: $rootScope.clientKeys.publicKey.e
+            n: $rootScope.clientKeys.publicKey.n.toString(),
+            e: $rootScope.clientKeys.publicKey.e.toString()
         }).success(function (res) {
             $cookies.put('secretss', JSON.stringify({
                 bits: $rootScope.clientKeys.publicKey.bits,
-                n: $rootScope.clientKeys.publicKey.n,
-                e: $rootScope.clientKeys.publicKey.e,
+                n: $rootScope.clientKeys.publicKey.n.toString(),
+                e: $rootScope.clientKeys.publicKey.e.toString(),
                 username: $rootScope.userLog.username,
-                privateKey: $rootScope.clientKeys.privateKey
+                d: $rootScope.clientKeys.privateKey.d.toString()
             }));
-            console.log($rootScope.clientKeys.publicKey.e.value);
-            console.log(bigInt($rootScope.clientKeys.publicKey.e.value));
+
         }).error(function (res) {
             console.log("KAPASAOOOOOOO");
         })

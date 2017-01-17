@@ -21,14 +21,10 @@ var anonimousUserSchema = new Schema({
             type: String
     },
     n: {
-            value: [{type: Number}],
-            sign: {type: Boolean},
-            isSmall: {type: Boolean}
+        type: String
     },
     e: {
-            value: {type: Number},
-            sign: {type: Boolean},
-            isSmall: {type: Boolean}
+        type: String
     }
 });
 

@@ -271,8 +271,8 @@ angular.module('cities').controller('LoginController', ['$http', '$scope', '$win
                                         password: password,
                                         checkUsername: false,
                                         bits: s.publicKey.bits,
-                                        n: s.publicKey.n,
-                                        e: s.publicKey.e
+                                        n: s.publicKey.n.toString(),
+                                        e: s.publicKey.e.toString()
                                     }).success(function (res) {
                                         $http.get('https://localhost:8085/ttp/publication').success(function (res) {
                                             if (username === res.username && password === password) {

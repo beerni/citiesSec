@@ -225,8 +225,6 @@ io.on('connection', function(conn){
                         }
                         else {
                             if (userr != undefined) {
-                                console.log('e: '+ userr.e.value);
-                                console.log('n: '+ userr.n.value);
                                 conn.emit('publicKeyChat', {
                                     public: {e: userr.e, n: userr.n},
                                     user: data.user,
