@@ -71,8 +71,6 @@ io = require('socket.io').listen(app2);
 app2.listen(3040);
 var users = [];
 var user = {};
-user.user='';
-user.ws = [];
 io.on('connection', function(conn){
     conn.emit('connection','user connected');
     conn.on('username', function(data, callback){
@@ -91,9 +89,15 @@ io.on('connection', function(conn){
         }
         if (exit!=true){
             callback(true);
+            user.user='';
+            user.ws=[];
+            console.log("exit");
             user.user = data;
+            console.log(data);
             user.ws.push(conn);
+            console.log("Esto: " + user.ws);
             users.push(user);
+            console.log(users);
         }
         console.log(data);
     });
@@ -212,6 +216,7 @@ io.on('connection', function(conn){
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].user == userrr) {
                         for (var j = 0; j < users[i].ws.length; j++) {
+                            console.log("Numero de conexiones: " + users[i].ws.length);
                             users[i].ws[j].emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
                         }
                         exit = true;
