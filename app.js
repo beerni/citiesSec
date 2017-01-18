@@ -106,27 +106,20 @@ io.on('connection', function (conn) {
         var exit = false;
         var cha;
         var idChat;
-        chat.find({_id: data.id}).exec(function (err, chati) {
+        chat.findOne({_id: data.id}).exec(function (err, chati) {
             if (err) {
             }
             else {
                 var num = 0;
-                if (chati.length != 0) {
-                    for (var i = 0; i < chati.length; i++) {
-                        for (var j = 0; j < chati[i].username.length; j++)
-                            if (chati[i].username[j] == data.user || chati[i].username[j] == data.useri) {
-                                num = num + 1;
-                                if (num == 2) {
-                                    cha = chati[i].username;
-                                    idChat = chati[i]._id;
-                                }
+                if (chati!= undefined) {
+                        for (var j = 0; j < chati.username.length; j++) {
+                            if (chati.username[j] == data.user ) {
+                                    cha = chati.username[j];
+                                    idChat = chati._id;
                             }
-                    }
-                    if (num < 2) {
-                        num = 0;
-                    }
+                        }
                 }
-                if (num < 2) {
+                else {
                     var newChat = new chat();
                     newChat.username.push(data.user);
                     newChat.username.push(data.useri);
@@ -144,16 +137,19 @@ io.on('connection', function (conn) {
 
             p = bignum.prime(16 / 2);
             g = 5;
-            for (var i = 0; i < cha.length; i++) {
-                if (cha[i] == data.user) {
-                    for (var j = 0; j < users[i].ws.length; j++) {
-                        users[i].ws[j].emit('diffieInit', {
-                            prime: p.toString(),
-                            mod: g,
-                            id: data.id,
-                            user: data.useri,
-                            idChat: idChat
-                        });
+                console.log(data.user);
+                console.log(cha);
+                if (cha == data.user) {
+                    for(var i=0;i<users.length;i++){
+                        for (var j = 0; j < users[i].ws.length; j++) {
+                            users[i].ws[j].emit('diffieInit', {
+                                prime: p.toString(),
+                                mod: g,
+                                id: data.id,
+                                user: data.useri,
+                                idChat: idChat
+                            });
+                        }
                     }
                     conn.emit('diffieInit', {
                         prime: p.toString(),
@@ -164,7 +160,6 @@ io.on('connection', function (conn) {
                     });
                     exit = true;
                 }
-            }
             if (exit != true) {
                 anonimousUser.findOne({username: data.user}).exec(function (err, userr) {
                     if (err) {
@@ -185,16 +180,24 @@ io.on('connection', function (conn) {
         });
     });
     conn.on('publicKeyChat', function (data) {
-        var newmessage = new chatMessage();
-        newmessage.username = data.user;
-        newmessage.chatid = data.id;
-        newmessage.message = data.msg;
-        newmessage.crypted = true;
-        newmessage.save(function (err) {
-            if (err) {
-                console.log(err);
+        chatMessage.findOne({random: data.random, message: data.msg}).exec(function(err, chat){
+            if(err){}
+            else{
+                if(chat==undefined){
+                    var newmessage = new chatMessage();
+                    newmessage.username = data.user;
+                    newmessage.chatid = data.id;
+                    newmessage.message = data.msg;
+                    newmessage.crypted = true;
+                    newmessage.random = data.random;
+                    newmessage.save(function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                }
             }
-        });
+        })
     })
     conn.on('diffie', function (data) {
         var exit = false;
@@ -238,18 +241,19 @@ io.on('connection', function (conn) {
         }
     });
     conn.on('messageChat', function (data) {
+        console.log("PAPIIIIIIIIIIIIIIIIIIIIIIII");
         var exit = false;
         var userrr = '';
         var idChat = '';
-        chat.find({_id: data.id}).exec(function (err, use) {
+        chat.findOne({_id: data.id}).exec(function (err, use) {
             if (err) {
             }
             else {
-                if (use.length != 0) {
-                    for (var s = 0; s < use[0].username.length; s++) {
+                if (use != undefined) {
+                    for (var s = 0; s < use.username.length; s++) {
 
-                        if (use[0].username[s] == data.useri) {
-                            userrr = use[0].username[s];
+                        if (use.username[s] == data.useri) {
+                            userrr = use.username[s];
                         }
                     }
                 }
@@ -259,10 +263,11 @@ io.on('connection', function (conn) {
                             console.log("Numero de conexiones: " + users[i].ws.length);
                             users[i].ws[j].emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
                         }
+
                         exit = true;
-                        conn.emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
                     }
                 }
+                conn.emit('messageChat', {msg: data.msg, user: data.user, id: data.id});
                 if (exit != true) {
                     console.log("no esta");
                     anonimousUser.findOne({username: data.useri}).exec(function (err, userr) {
@@ -270,13 +275,21 @@ io.on('connection', function (conn) {
                         }
                         else {
                             if (userr != undefined) {
-                                conn.emit('publicKeyChat', {
-                                    public: {e: userr.e, n: userr.n},
-                                    user: data.user,
-                                    id: data.id,
-                                    msg: data.msg,
-                                    useri: data.useri
-                                });
+                                console.log("DALEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                                for(var i=0; i<users.length;i++) {
+                                    if(users[i].user==data.user) {
+                                        for(var j = 0; j<users[i].ws.length;j++) {
+                                            users[i].ws[j].emit('publicKeyChat', {
+                                                public: {e: userr.e, n: userr.n},
+                                                user: data.user,
+                                                id: data.id,
+                                                msg: data.msg,
+                                                useri: data.useri,
+                                                random: data.random
+                                            });
+                                        }
+                                    }
+                                }
                             }
                         }
                     })

@@ -20,6 +20,9 @@ var chatMessageSchema = new Schema({
     },
     crypted: {
         type: Boolean
+    },
+    random: {
+        type:String
     }
 });
 

@@ -39,18 +39,11 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         $rootScope.keyChats.push($rootScope.keys);
         console.log($rootScope.keys.secret);
     });
-    socket.on('notConnected', function (data) {
-        for (var i = 0; i < $rootScope.userPublic.length; i++) {
-            if ($rootScope.userPublic[i].user == data.user) {
-                $rootScope.userPublic[i].e = data.e;
-                $rootScope.userPublic[i].n = data.n;
-                $rootScope.userPublic[i].user = data.user;
-            }
-        }
-    })
+    console.log('aS');
     socket.on('publicKeyChat', function (data) {
         var txt = '';
         var cryptmsg = []
+        console.log("sasaas");
         for (var i = 0; i < data.msg.length; i++) {
             var msgDes = bigInt(data.msg[i], 16) / $rootScope.keys.secret;
             txt = txt + operations.hex2a(msgDes.toString(16));
@@ -131,7 +124,8 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
                 msgEnc = msgEnc * $rootScope.keys.secret;
                 txtenv.push(msgEnc.toString(16))
             }
-            socket.emit('messageChat', {msg: txtenv, user: userLogged.user.username, id: $routeParams.id, useri: $scope.otheruser});
+            var random = bigInt.randBetween(1,5000);
+            socket.emit('messageChat', {msg: txtenv, user: userLogged.user.username, id: $routeParams.id, useri: $scope.otheruser, random: random.toString()});
             $scope.txt.msg = '';
         }else{
         }
@@ -157,7 +151,7 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
             txt.user = res[i].username;
             txt.id=res[i].chatid;
             txt.msg=res[i].message;
-            $scope.chatMsg.push(txt);
+                $scope.chatMsg.push(txt);
         }
         console.log( $scope.mensajes);
     }).error(function (res) {
