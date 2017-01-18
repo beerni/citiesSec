@@ -70,7 +70,6 @@ var app2 = http2.createServer(options);
 io = require('socket.io').listen(app2);
 app2.listen(3040);
 var users = [];
-var user = {};
 io.on('connection', function(conn){
     conn.emit('connection','user connected');
     conn.on('username', function(data, callback){
@@ -89,6 +88,7 @@ io.on('connection', function(conn){
         }
         if (exit!=true){
             callback(true);
+            var user = {};
             user.user='';
             user.ws=[];
             console.log("exit");
