@@ -6,6 +6,7 @@ var router = express.Router();
 var chat = require('../models/chat.js');
 var chatMsg = require('../models/chatMessage');
 var ad = require('../models/ad.js');
+var mongoose = require('mongoose');
 
 router.get('/:username', function (req, res, next) {
     if(req.params.username==undefined){
@@ -44,15 +45,20 @@ router.get('/msg/:username', function(req,res,next){
     }
 });
 router.get('/id/:id', function(req,res,next){
+    var yep = mongoose.Types.ObjectId(req.params.id);
+    console.log(yep);
     if(req.params.id==undefined){
         res.status(404).send("Not found");
     }else{
-        chat.findOne({_id: req.params.id}).exec(function (err, chateo) {
-            if(err){res.status(500).send("Internal server error")}
+        chat.findOne({_id:yep},function (err, chateo) {
+            if(err){
+                res.status(500).send("Internal server error")
+            }
             else{
                 if(chateo==undefined){
                     res.status(404).send('Not found');
                 }else{
+                    console.log('RES', chateo);
                     res.send(chateo);
                 }
             }

@@ -1,23 +1,11 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>WORKING</title>
-
-
-</head>
-<body>
-    <div align="center">
-        <img src="http://cucsa.org.uk/wp-content/uploads/2015/10/Work_In_Progress.png">
-    </div>
-</body>
-</html>
-=======
 <head>
     <title>Chat</title>
     <link rel="stylesheet" href="../css/chat/style.css">
 </head>
+<body>
+
 <br>
 <br>
 <br>
@@ -33,30 +21,33 @@
                     <div class="member_list">
                         <ul class="list-unstyled">
                             <div ng-repeat="all in allChats">
-                            <li class="left clearfix" ng-if="convers" ng-click="change(all._id)">
+                                <li class="left clearfix" ng-if="convers" ng-click="change(all._id)">
                      <span class="chat-img pull-left">
                      </span>
-                                <div class="chat-body clearfix">
-                                    <div class="header_sec">
-                                        <strong class="primary-font">Product: {{all.productName}}</strong>
+                                    <div class="chat-body clearfix">
+                                        <div class="header_sec">
+                                            <strong class="primary-font">Product: {{all.productName}}</strong>
+                                        </div>
+                                        <div class="contact_sec" ng-repeat="user in all.username">
+                                            <strong class="primary-font" ng-if="user != userLog.username">With:
+                                                {{user}}</strong> <span class="badge pull-right">3</span>
+                                        </div>
                                     </div>
-                                    <div class="contact_sec" ng-repeat="user in all.username">
-                                        <strong class="primary-font" ng-if="user != userLog.username">With: {{user}}</strong> <span class="badge pull-right">3</span>
-                                    </div>
-                                </div>
-                            </li>
-                                </div>
+                                </li>
+                            </div>
                             <li class="left clearfix" ng-if="!convers">
                      <span class="chat-img pull-left">
                      </span>
                                 <div class="chat-body clearfix">
                                     <div class="header_sec">
-                                        <strong class="primary-font">No conversations yet</strong> <strong class="pull-right"></strong>
+                                        <strong class="primary-font">No conversations yet</strong> <strong
+                                            class="pull-right"></strong>
                                     </div>
                                 </div>
                             </li>
                         </ul>
-                    </div></div>
+                    </div>
+                </div>
             </div>
             <!--chat_sidebar-->
 
@@ -85,8 +76,6 @@
                         </li>
 
 
-
-
                     </ul>
                 </div><!--chat_area-->
                 <div class="message_write">
@@ -100,5 +89,6 @@
         </div> <!--message_section-->
     </div>
 </div>
-</div>
->>>>>>> socket
+</body>
+</html>
+

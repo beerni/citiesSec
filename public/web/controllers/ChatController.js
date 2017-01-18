@@ -1,8 +1,7 @@
 /**
  * Created by Joe on 4/1/17.
  */
-<<<<<<< HEAD
-=======
+
 angular.module('cities').controller('ChatController', ['$http', '$scope','socketio','$cookies','$rootScope','$routeParams','$window', function ($http, $scope, socket,$cookies,$rootScope, $routeParams, $window) {
     $scope.txt = {};
     var t='';
@@ -21,7 +20,6 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     if($routeParams.id !=undefined){
         var esta=false;
         for(var s=0;s < $rootScope.keyChats.length;s++) {
-            console.log()
             if ($rootScope.keyChats[s].id == $routeParams.id) {
                 esta = true;
                 t = s;
@@ -117,4 +115,4 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     })
 
 }]);
->>>>>>> socket
+

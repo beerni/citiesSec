@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 
 
 Schema = mongoose.Schema;
-var chat = mongoose.model('Ad');
+//var chat = mongoose.model('Ad');
 
 var chatSchema = new Schema({
 
