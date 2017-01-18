@@ -12,8 +12,8 @@ var http2 = require('https');
 var mongoose = require('mongoose');
 var bignum = require('bignum');
 var passport = require('passport');
-var flash    = require('connect-flash');
-var session      = require('express-session');
+var flash = require('connect-flash');
+var session = require('express-session');
 var jwt = require('jwt-simple');
 
 mongoose.Promise = global.Promise;
@@ -53,7 +53,7 @@ var options = {
 };
 
 //Passport
-app.use(session({ secret: 'mysecret' })); // session secret
+app.use(session({secret: 'mysecret'})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
@@ -70,27 +70,29 @@ var app2 = http2.createServer(options);
 io = require('socket.io').listen(app2);
 app2.listen(3040);
 var users = [];
-var user = {};
-io.on('connection', function(conn){
-    conn.emit('connection','user connected');
-    conn.on('username', function(data, callback){
-        if(data==null)
+io.on('connection', function (conn) {
+    conn.emit('connection', 'user connected');
+    conn.on('username', function (data, callback) {
+        if (data == null)
             callback(false);
-        else{
+        else {
             var exit = false;
-            for(var i = 0; i<users.length; i++) {
-                if(users[i].user == data){
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].user == data) {
                     users[i].ws.push(conn);
                     callback(false);
                     exit = true;
+                    console.log(users);
+
                 }
             }
 
         }
-        if (exit!=true){
+        if (exit != true) {
             callback(true);
-            user.user='';
-            user.ws=[];
+            var user = {};
+            user.user = '';
+            user.ws = [];
             console.log("exit");
             user.user = data;
             console.log(data);
@@ -100,11 +102,11 @@ io.on('connection', function(conn){
             console.log(users);
         }
     });
-    conn.on('diffieInit', function(data){
+    conn.on('diffieInit', function (data) {
         var exit = false;
         var cha;
         var idChat;
-        chat.find({_id: data.id}).exec(function(err,chati) {
+        chat.find({_id: data.id}).exec(function (err, chati) {
             if (err) {
             }
             else {
@@ -113,8 +115,8 @@ io.on('connection', function(conn){
                     for (var i = 0; i < chati.length; i++) {
                         for (var j = 0; j < chati[i].username.length; j++)
                             if (chati[i].username[j] == data.user || chati[i].username[j] == data.useri) {
-                                num = num+1;
-                                if(num==2){
+                                num = num + 1;
+                                if (num == 2) {
                                     cha = chati[i].username;
                                     idChat = chati[i]._id;
                                 }
@@ -130,8 +132,8 @@ io.on('connection', function(conn){
                     newChat.username.push(data.useri);
                     newChat.idProduct = data.idProduct;
                     newChat.productName = data.name;
-                    newChat.save(function(err){
-                        if(err){
+                    newChat.save(function (err) {
+                        if (err) {
                             console.log(err);
                         }
                     });
@@ -140,69 +142,108 @@ io.on('connection', function(conn){
                 }
             }
 
-            p = bignum.prime(64 / 2);
+            p = bignum.prime(16 / 2);
             g = 5;
             for (var i = 0; i < cha.length; i++) {
                 if (cha[i] == data.user) {
                     for (var j = 0; j < users[i].ws.length; j++) {
-                        users[i].ws[j].emit('diffieInit', {prime: p.toString(), mod: g,id: data.id,user: data.useri, idChat: idChat});
+                        users[i].ws[j].emit('diffieInit', {
+                            prime: p.toString(),
+                            mod: g,
+                            id: data.id,
+                            user: data.useri,
+                            idChat: idChat
+                        });
                     }
-                    conn.emit('diffieInit', {prime: p.toString(), mod: g, id: data.id, user: data.user, idChat: idChat});
+                    conn.emit('diffieInit', {
+                        prime: p.toString(),
+                        mod: g,
+                        id: data.id,
+                        user: data.user,
+                        idChat: idChat
+                    });
                     exit = true;
                 }
             }
             if (exit != true) {
-                anonimousUser.findOne({username: data.user}).exec(function(err, userr){
-                    if(err){}
-                    else{
-                        if(userr.length!=0){
-                            conn.emit('notConnected', {e:userr[0].e, n:userr[0].n, user: data.user, id:data.id, idChat:idChat})
+                anonimousUser.findOne({username: data.user}).exec(function (err, userr) {
+                    if (err) {
+                    }
+                    else {
+                        if (userr.length != 0) {
+                            conn.emit('notConnected', {
+                                e: userr[0].e,
+                                n: userr[0].n,
+                                user: data.user,
+                                id: data.id,
+                                idChat: idChat
+                            })
                         }
                     }
                 })
             }
         });
     });
-    conn.on('publicKeyChat', function(data){
+    conn.on('publicKeyChat', function (data) {
         var newmessage = new chatMessage();
         newmessage.username = data.user;
         newmessage.chatid = data.id;
         newmessage.message = data.msg;
         newmessage.crypted = true;
-        newmessage.save(function(err) {
+        newmessage.save(function (err) {
             if (err) {
                 console.log(err);
             }
         });
     })
-    conn.on('diffie', function(data){
+    conn.on('diffie', function (data) {
         var exit = false;
         for (var i = 0; i < users.length; i++) {
             if (users[i].user == data.user) {
                 for (var j = 0; j < users[i].ws.length; j++) {
-                    users[i].ws[j].emit('diffie', {prime: data.prime, mod: data.mod,id: data.id,user: data.user, module: data.module});
+                    users[i].ws[j].emit('diffie', {
+                        prime: data.prime,
+                        mod: data.mod,
+                        id: data.id,
+                        user: data.user,
+                        module: data.module
+                    });
                 }
-                conn.emit('diffie', {prime: data.prime, mod: data.mod,id: data.id,user: data.user, module: data.module});
+                conn.emit('diffie', {
+                    prime: data.prime,
+                    mod: data.mod,
+                    id: data.id,
+                    user: data.user,
+                    module: data.module
+                });
                 exit = true;
             }
         }
         if (exit != true) {
-            anonimousUser.findOne({username: data.user}).exec(function(err, userr){
-                if(err){}
-                else{
-                    if(userr=undefined){
-                        conn.emit('notConnected', {e:userr[0].e, n:userr[0].n, user: data.user, id:data.id, idChat:idChat})
+            anonimousUser.findOne({username: data.user}).exec(function (err, userr) {
+                if (err) {
+                }
+                else {
+                    if (userr = undefined) {
+                        conn.emit('notConnected', {
+                            e: userr[0].e,
+                            n: userr[0].n,
+                            user: data.user,
+                            id: data.id,
+                            idChat: idChat
+                        })
                     }
                 }
             })
         }
     });
-    conn.on('messageChat', function(data){
+    conn.on('messageChat', function (data) {
         var exit = false;
         var userrr = '';
         var idChat = '';
-        chat.find({_id: data.id}).exec(function(err, use){
-            if(err){}
+        chat.find({_id: data.id}).exec(function (err, use) {
+            if (err) {
+            }
             else {
                 if (use.length != 0) {
                     for (var s = 0; s < use[0].username.length; s++) {
@@ -244,21 +285,19 @@ io.on('connection', function(conn){
         })
 
     })
-    conn.on('disconnect', function(data){
-        for(var i = 0; i< users.length; i++){
-            /*for(var j =0; j < users[j].ws.length; j++){
-
-                if(users[i].ws[j]==conn){
-                    users[i].ws.splice(j,1);
-                    if(users[i].ws==""){
-                        users.splice(i,1)
+    conn.on('disconnect', function () {
+        console.log('disconnect');
+        for (var i = 0; i < users.length; i++) {
+            for (var j = 0; j < users[i].ws.length; j++) {
+                if (users[i].ws[j] == conn) {
+                    users[i].ws.splice(j, 1);
+                    if (users[i].ws == "") {
+                        users.splice(i, 1)
                     }
                     break;
                 }
-            }*/
-            if(users[i].user==data.user){
-                users.splice(i,1);
             }
+
         }
     })
 });

@@ -26,13 +26,15 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
                     $rootScope.keys.secret = '';
                     $rootScope.idChat = [];
                     $rootScope.userPublic = [];
+                    socket.connect();
                     var userLogged = JSON.parse($cookies.get('tokenData'));
-                    if ($window.location.href != "https://localhost:8080") {
                         $cookies.remove('user');
                         socket.on('connection', function (data) {
+                            console.log('ENTRO');
                             socket.emit('username', userLogged.user.username);
                         });
-                        socket.on('diffieInit', function (data) {
+                       /* socket.on('diffieInit', function (data) {
+                            console.log('DIFFIE INIT');
                             $rootScope.keys.random = bigInt.randBetween(1, 10);
                             $rootScope.keys.module = operations.getModule(data.prime, data.mod, $rootScope.keys.random);
                             console.log($rootScope.keys.module);
@@ -55,7 +57,7 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
                             }
                             $rootScope.keyChats.push($rootScope.keys);
                             console.log($rootScope.keys.secret);
-                        });
+                        });*/
                         socket.on('notConnected', function (data) {
                             for (var i = 0; i < $rootScope.userPublic.length; i++) {
                                 if ($rootScope.userPublic[i].user == data.user) {
@@ -64,28 +66,8 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
                                     $rootScope.userPublic[i].user = data.user;
                                 }
                             }
-                        })
-                        socket.on('publicKeyChat', function (data) {
-                            var txt = '';
-                            var cryptmsg = []
-                            for (var i = 0; i < data.msg.length; i++) {
-                                var msgDes = bigInt(data.msg[i], 16) / $rootScope.keys.secret;
-                                txt = txt + operations.hex2a(msgDes.toString(16));
-
-                            }
-                            ;
-                            console.log(txt);
-                            var msg = bigInt(operations.convertToHex(txt), 16);
-                            var cryptmsg = msg.modPow(new bigInt(data.public.e), new bigInt(data.public.n));
-                            console.log(cryptmsg);
-                            socket.emit('publicKeyChat', {
-                                msg: cryptmsg.toString(16),
-                                user: userLogged.user.username,
-                                id: data.id,
-                                useri: data.useri
-                            })
                         });
-                    }
+
                 }
                 else {
                     console.log("NO TOKEN");
@@ -97,9 +79,13 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
     }])
     .factory('socketio', ['$rootScope', function ($rootScope) {
         var socketUrl = "https://localhost:3040";
-        var socket = socket = io.connect(socketUrl, {reconnect: true});
+        var socket = null;
 
         return {
+            connect: function(){
+                console.log('connect')
+                socket = io.connect(socketUrl);
+            },
             on: function (eventName, callback) {
                 socket.on(eventName, function () {
                     var args = arguments;
@@ -121,7 +107,7 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
             disconnect: function () {
                 socket.disconnect();
             },
-            socket: socket
+            socket:socket
         }
     }])
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {

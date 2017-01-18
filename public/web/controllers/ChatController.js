@@ -14,7 +14,59 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     $scope.otheruser='';
     var texto = [];
     var userLogged = JSON.parse($cookies.get('tokenData'));
+    socket.on('diffieInit', function (data) {
+        console.log('DIFFIE INIT');
+        $rootScope.keys.random = bigInt.randBetween(1, 10);
+        $rootScope.keys.module = operations.getModule(data.prime, data.mod, $rootScope.keys.random);
+        console.log($rootScope.keys.module);
+        $rootScope.keys.username = data.user;
+        $rootScope.keys.id = data.id;
+        socket.emit('diffie', {
+            module: $rootScope.keys.module,
+            id: data.id,
+            user: data.user,
+            mod: data.mod,
+            prime: data.prime
+        });
+    });
+    socket.on('diffie', function (data) {
+        $rootScope.keys.secret = operations.getModule(data.prime, data.mod, data.module);
+        for (var i = 0; i < $rootScope.keyChats.length; i++) {
+            if ($rootScope.keyChats[i].id == data.id) {
+                $rootScope.keyChats.splice(i, 1);
+            }
+        }
+        $rootScope.keyChats.push($rootScope.keys);
+        console.log($rootScope.keys.secret);
+    });
+    socket.on('notConnected', function (data) {
+        for (var i = 0; i < $rootScope.userPublic.length; i++) {
+            if ($rootScope.userPublic[i].user == data.user) {
+                $rootScope.userPublic[i].e = data.e;
+                $rootScope.userPublic[i].n = data.n;
+                $rootScope.userPublic[i].user = data.user;
+            }
+        }
+    })
+    socket.on('publicKeyChat', function (data) {
+        var txt = '';
+        var cryptmsg = []
+        for (var i = 0; i < data.msg.length; i++) {
+            var msgDes = bigInt(data.msg[i], 16) / $rootScope.keys.secret;
+            txt = txt + operations.hex2a(msgDes.toString(16));
 
+        }
+        console.log(txt);
+        var msg = bigInt(operations.convertToHex(txt), 16);
+        var cryptmsg = msg.modPow(new bigInt(data.public.e), new bigInt(data.public.n));
+        console.log(cryptmsg);
+        socket.emit('publicKeyChat', {
+            msg: cryptmsg.toString(16),
+            user: userLogged.user.username,
+            id: data.id,
+            useri: data.useri
+        })
+    });
     $scope.seeChat=false;
     $scope.change = function(id){
         $window.location.href='https://localhost:8080/#/chat/'+id;
