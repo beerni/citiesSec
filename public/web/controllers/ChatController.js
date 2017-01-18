@@ -72,7 +72,6 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
         $window.location.href='https://localhost:8080/#/chat/'+id;
     }
     if($routeParams.id !=undefined){
-        var esta=false;
         for(var s=0;s < $rootScope.keyChats.length;s++) {
             if ($rootScope.keyChats[s].id == $routeParams.id) {
                 esta = true;
@@ -84,7 +83,6 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
                 for(var i =0; i<res.username.length;i++){
                     if(res.username[i]!=userLogged.user.username){
                         $scope.otheruser=res.username[i];
-                        if(esta==false) {
                             console.log("Pa que entras");
                             socket.emit('diffieInit', {
                                 id: $routeParams.id,
@@ -93,7 +91,6 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
                                 name: res.title,
                                 idProduct: res.idProduct
                             });
-                        }
                     }
                 }
             }).error(function (res) {
