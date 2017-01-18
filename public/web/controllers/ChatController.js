@@ -13,6 +13,8 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     $scope.chatMsg=[];
     $scope.otheruser='';
     var texto = [];
+    var userLogged = JSON.parse($cookies.get('tokenData'));
+
     $scope.seeChat=false;
     $scope.change = function(id){
         $window.location.href='https://localhost:8080/#/chat/'+id;
@@ -28,14 +30,14 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
             $http.get('https://localhost:8080/api/chat/id/'+ $routeParams.id).success(function (res) {
                 console.log(res);
                 for(var i =0; i<res.username.length;i++){
-                    if(res.username[i]!=$rootScope.userLog.username){
+                    if(res.username[i]!=userLogged.user.username){
                         $scope.otheruser=res.username[i];
                         if(esta==false) {
                             console.log("Pa que entras");
                             socket.emit('diffieInit', {
                                 id: $routeParams.id,
                                 user: res.username[i],
-                                useri: $rootScope.userLog.username,
+                                useri: userLogged.user.username,
                                 name: res.title,
                                 idProduct: res.idProduct
                             });
@@ -80,13 +82,12 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
                 msgEnc = msgEnc * $rootScope.keys.secret;
                 txtenv.push(msgEnc.toString(16))
             }
-            socket.emit('messageChat', {msg: txtenv, user: $rootScope.userLog.username, id: $routeParams.id, useri: $scope.otheruser});
+            socket.emit('messageChat', {msg: txtenv, user: userLogged.user.username, id: $routeParams.id, useri: $scope.otheruser});
             $scope.txt.msg = '';
         }else{
-
         }
     };
-    $http.get('https://localhost:8080/api/chat/'+$rootScope.userLog.username).success(function (res) {
+    $http.get('https://localhost:8080/api/chat/'+userLogged.user.username).success(function (res) {
         if(res.length!=0){
             $scope.convers=true;
         }
@@ -94,7 +95,7 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     }).error(function (res) {
         console.log("KAPASAOOOOOOO");
     });
-    $http.get('https://localhost:8080/api/chat/msg/'+$rootScope.userLog.username).success(function (res) {
+    $http.get('https://localhost:8080/api/chat/msg/'+userLogged.user.username).success(function (res) {
         console.log(JSON.parse($cookies.get('secretss')));
         var n = JSON.parse($cookies.get('secretss')).n;
         var d = JSON.parse($cookies.get('secretss')).d;
@@ -106,7 +107,7 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
             var txt = {};
             txt.user = res[i].username;
             txt.id=res[i].chatid;
-            txt.msg=res[i].message
+            txt.msg=res[i].message;
             $scope.chatMsg.push(txt);
         }
         console.log( $scope.mensajes);
