@@ -27,7 +27,7 @@
                                 <h4>{{product.price}} €</h4>
                                 <div style=" height: 1em;line-height: 1em; overflow: hidden;">{{product.description}}</div>
                                 <br>
-                                <a href="#chat" class="btn btn-skin">Chat</a>
+                                <a ng-if="product.username!=userLog.username" ng-click="chat(product._id,product.username, product.title)" class="btn btn-skin">Chat</a>
                                 <a href="#details/{{product._id}}" class="btn btn-skin">Details</a>
                             </div>
                         </div>

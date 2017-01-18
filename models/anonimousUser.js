@@ -16,6 +16,15 @@ var anonimousUserSchema = new Schema({
     },
     salt: {
         type: String
+    },
+    bits: {
+            type: String
+    },
+    n: {
+        type: String
+    },
+    e: {
+        type: String
     }
 });
 

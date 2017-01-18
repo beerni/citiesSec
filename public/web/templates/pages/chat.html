@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,3 +13,92 @@
     </div>
 </body>
 </html>
+=======
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="../css/chat/style.css">
+</head>
+<br>
+<br>
+<br>
+<div class="main_section">
+    <div class="container">
+        <div class="chat_container">
+            <div class="col-sm-3 chat_sidebar">
+                <div class="row">
+                    <div class="dropdown all_conversation">
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        </ul>
+                    </div>
+                    <div class="member_list">
+                        <ul class="list-unstyled">
+                            <div ng-repeat="all in allChats">
+                            <li class="left clearfix" ng-if="convers" ng-click="change(all._id)">
+                     <span class="chat-img pull-left">
+                     </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header_sec">
+                                        <strong class="primary-font">Product: {{all.productName}}</strong>
+                                    </div>
+                                    <div class="contact_sec" ng-repeat="user in all.username">
+                                        <strong class="primary-font" ng-if="user != userLog.username">With: {{user}}</strong> <span class="badge pull-right">3</span>
+                                    </div>
+                                </div>
+                            </li>
+                                </div>
+                            <li class="left clearfix" ng-if="!convers">
+                     <span class="chat-img pull-left">
+                     </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header_sec">
+                                        <strong class="primary-font">No conversations yet</strong> <strong class="pull-right"></strong>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div></div>
+            </div>
+            <!--chat_sidebar-->
+
+
+            <div class="col-sm-9 message_section" ng-if="seeChat">
+                <div class="row">
+                </div><!--new_message_head-->
+
+                <div class="chat_area">
+                    <ul class="list-unstyled" ng-repeat="chati in chatMsg">
+                        <li class="left clearfix" ng-if="userLog.username==chati.user">
+                     <span class="chat-img1 pull-left">
+                     </span>
+                            <div class="chat_time pull-right">{{chati.user}}</div>
+                            <div class="chat-body1 clearfix">
+                                <p>{{chati.msg}}</p>
+                            </div>
+                        </li>
+                        <li class="left clearfix admin_chat" ng-if="userLog.username!=chati.user">
+                     <span class="chat-img1 pull-right">
+                     </span>
+                            <div class="chat_time pull-left">{{chati.user}}</div>
+                            <div class="chat-body1 clearfix">
+                                <p>{{chati.msg}}</p>
+                            </div>
+                        </li>
+
+
+
+
+                    </ul>
+                </div><!--chat_area-->
+                <div class="message_write">
+                    <textarea class="form-control" placeholder="type a message" ng-model="txt.msg"></textarea>
+                    <div class="clearfix"></div>
+                    <div class="chat_bottom">
+                        <a class="pull-right btn btn-success" ng-click="send()">
+                            Send</a></div>
+                </div>
+            </div>
+        </div> <!--message_section-->
+    </div>
+</div>
+</div>
+>>>>>>> socket

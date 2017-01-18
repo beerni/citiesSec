@@ -20,7 +20,7 @@ router.post('/add', function (req, res) {
         username: req.body.username,
         imgurl: req.body.imgurl
     });
-
+    console.log(req.body.username);
     ad.save(function (err, a) {
         if (err) return res.send(500, err.message);
         res.status(200).json(a);

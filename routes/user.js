@@ -93,7 +93,10 @@ router.post('/register/anonimous', function (req, res, next) {
         var newUserAnonimous = new anonimousUsers({
             username: req.body.username,
             password: password,
-            salt: salt
+            salt: salt,
+            bits: req.body.bits,
+            n: req.body.n,
+            e: req.body.e
         });
         newUserAnonimous.save(function (err) {
             var A = 'Market';
@@ -169,5 +172,24 @@ router.post('/loginTest',jwtauth, function (req, res, next) {
     console.log('Tiene token y puede continuar');
 });
 
-
+router.post('/update', function(req,res,next){
+    if(req.body.user==undefined){
+        res.sendStatus(404);
+    }else{
+        anonimousUsers.findOneAndUpdate({'username': req.body.user},{bits: req.body.bits, n: req.body.n, e: req.body.e}, function(err, user){
+            if(err) {
+                res.statusCode('500');
+            }
+        })
+    }
+    anonimousUsers.find({'username': req.body.user}).exec(function(err,user){
+        if(err){
+            res.status(500).send("Internal server error");
+        }else if(user.length==0){
+            res.status(404).send("User not found");
+        }else{
+            res.send(user[0]);
+        }
+    })
+})
 module.exports = router;

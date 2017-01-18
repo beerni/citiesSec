@@ -29,7 +29,7 @@
                                         <div class="pricing-header">
                                             <p class="pricing-title">{{product.title}}</p>
                                             <p class="pricing-rate">{{product.price}}<span></span></p>
-                                            <a href="#chat" class="btn btn-custom">CHAT</a>
+                                            <a ng-if="product.username!=userLog.username" ng-click="chat()" class="btn btn-custom">CHAT</a>
                                         </div>
 
                                         <div class="pricing-list">

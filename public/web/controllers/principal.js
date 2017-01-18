@@ -33,6 +33,9 @@ angular.module('cities').controller('PrincipalController', ['$http', '$scope','$
         $rootScope.isLogged = false;
         $rootScope.token = null;
         $cookies.remove('tokenData');
+        $cookies.remove('user');
         $window.location.href = "https://localhost:8080/";
+        socket.emit('disconnect', {user: $rootScope.userLog.user});
+        socket.disconnect();
     }
 }]);
