@@ -1,8 +1,7 @@
 /**
  * Created by bernatmir on 10/12/16.
  */
-angular.module('cities').controller('PrincipalController', ['$http', '$scope','$rootScope','$window','$cookies','$location', function ($http, $scope,$rootScope,$window,$cookies,$location) {
-
+angular.module('cities').controller('PrincipalController', ['$http', '$scope','$rootScope','$window','$cookies','$location','socketio', function ($http, $scope,$rootScope,$window,$cookies,$location,socket) {
     if(angular.isUndefined($cookies.getObject('tokenData'))){
         $rootScope.isLogged=false;
         $location.path('/');
@@ -30,12 +29,15 @@ angular.module('cities').controller('PrincipalController', ['$http', '$scope','$
 
     $scope.logout = function () {
         console.log('Logouts');
+        var userLogged = JSON.parse($cookies.get('tokenData'));
         $rootScope.isLogged = false;
         $rootScope.token = null;
-        $cookies.remove('tokenData');
         $cookies.remove('user');
-        $window.location.href = "https://localhost:8080/";
-        socket.emit('disconnect', {user: $rootScope.userLog.user});
+        console.log('ME CAGO EN LA PUTA');
+        console.log(userLogged.user.username);
+        socket.emit('disconnect', {user: userLogged.user.username});
         socket.disconnect();
+        $cookies.remove('tokenData');
+        $window.location.href = "https://localhost:8080/";
     }
 }]);

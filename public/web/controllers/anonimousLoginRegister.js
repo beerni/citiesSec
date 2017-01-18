@@ -1,7 +1,7 @@
 /**
  * Created by bernatmir on 28/12/16.
  */
-angular.module('cities').controller('AnonimousController', ['$http', '$scope', '$window', '$cookies', '$rootScope','$location', function ($http, $scope, $window, $cookies, $rootScope,$location) {
+angular.module('cities').controller('AnonimousController', ['$http', '$scope', '$window', '$cookies', '$rootScope','$location','socketio', function ($http, $scope, $window, $cookies, $rootScope,$location,socket) {
     if(angular.isUndefined($cookies.getObject('tokenData'))){
         $rootScope.isLogged=false;
 
@@ -431,7 +431,27 @@ angular.module('cities').controller('AnonimousController', ['$http', '$scope', '
                     }
                 };
                 $cookies.put('tokenData', JSON.stringify(res));
+                var userLogged = JSON.parse($cookies.get('tokenData'));
                 $rootScope.isLogged = true;
+
+                $rootScope.chatMens = [];
+                $rootScope.keyChats = [];
+                $rootScope.keys = {};
+                $rootScope.keys.module = '';
+                $rootScope.keys.random = '';
+                $rootScope.keys.id = '';
+                $rootScope.keys.username = '';
+                $rootScope.keys.secret = '';
+                $rootScope.idChat = [];
+                $rootScope.userPublic = [];
+                socket.connect();
+                socket.emit('connection');
+                if ($window.location.href != "https://localhost:8080") {
+                    $cookies.remove('user');
+                    socket.on('connection', function (data) {
+                        socket.emit('username', userLogged.user.username);
+                    });
+                }
                 $window.location.href = 'https://localhost:8080/#/shop'
 
             }).error(function (res) {
