@@ -84,7 +84,11 @@ router.get('/getAll', function (req, res) {
         res.status(200).json(adsSeen);
     });
 });
-
+router.get('/mod/:id', function (req, res) {
+    Ad.findById(req.params.id, function (err, ad) {
+        res.status(200).json(ad);
+    });
+})
 //Get ad by id
 router.post('/:id', function (req, res) {
     var newSeen = req.body.data;
