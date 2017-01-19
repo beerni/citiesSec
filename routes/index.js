@@ -7,11 +7,17 @@ var jwtauth = require('../config/jwtauth');
 var keys = require('./keys.js');
 serverKeys = keys.getKeys();
 publicKeys = keys.getPublicKey();
+var paillierKeys = keys.paillierKeys();
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
-
+router.get('/paillierKeys', function (req, res) {
+    res.status(200).send({
+        n: paillierKeys.publicKey.n.toString(),
+        g: paillierKeys.publicKey.g.toString()
+    });
+});
 router.get('/publicKey', function (req, res) {
     res.status(200).send({
         bits: publicKeys.bits.toString(),

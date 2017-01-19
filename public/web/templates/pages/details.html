@@ -21,13 +21,14 @@
             <div class="col-md-7">
                 <br><br>
                 <section id="pricing-table">
+                    <span style="left: 630px" class = "glyphicon glyphicon-eye-open">{{product.seen}}</span>
                     <div class="container">
                         <div class="row">
                             <div class="pricing">
                                 <div class="col-md-7 col-sm-12 col-xs-12">
-                                    <div class="pricing-table">
+                                    <div class="pricing-table ">
                                         <div class="pricing-header">
-                                            <p class="pricing-title">{{product.title}}</p>
+                                            <p  class="pricing-title">{{product.title}}</p>
                                             <p class="pricing-rate">{{product.price}}<span></span></p>
                                             <a ng-if="product.username!=userLog.username" ng-click="chat()" class="btn btn-custom">CHAT</a>
                                         </div>

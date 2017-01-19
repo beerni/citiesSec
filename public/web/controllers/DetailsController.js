@@ -4,7 +4,7 @@
 
 angular.module('cities').controller('DetailsController', ['$http', '$scope','$routeParams','$cookies','socketio','$rootScope','$window', function ($http, $scope, $routeParams, $cookies, socket, $rootScope, $window) {
     $scope.product ={};
-
+    console.log('DETAIL OF A PRODUCT');
     if(angular.isUndefined($cookies.getObject('tokenData'))){
         $rootScope.isLogged=false;
         $location.path('/');
@@ -29,7 +29,19 @@ angular.module('cities').controller('DetailsController', ['$http', '$scope','$ro
     }
 
     init = function () {
-        $http.get('https://localhost:8080/api/ad/'+ $routeParams.id).success(function (res) {
+        if($rootScope.paillierKeys ==undefined){
+            $http.get('https://localhost:8080/api/paillierKeys').success(function (response) {
+                $rootScope.paillierKeys = response
+            });
+        }
+        var msg = '1';
+        var n = bigInt($rootScope.paillierKeys.n);
+        var n2 = n.pow(2);
+        var g = bigInt($rootScope.paillierKeys.g);
+        var r1 = bigInt.randBetween(bigInt(0), n);
+        var bi1 =  bigInt(msg).mod(n);
+        var visit = g.modPow(bi1, n2).multiply(r1.modPow(n, n2)).mod(n2).toString(16);
+        $http.post('https://localhost:8080/api/ad/'+ $routeParams.id,{data:visit}).success(function (res) {
             console.log(res);
             $scope.product = res;
             $cookies.put('chatInfo', JSON.stringify(res));

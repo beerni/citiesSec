@@ -23,6 +23,9 @@ var adSchema = new Schema({
         },
         imgurl: {
             type: String
+        },
+        seen:{
+            type:String
         }
     },
     {

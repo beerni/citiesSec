@@ -57,7 +57,19 @@ angular.module('cities').controller('CreateadController', ['$http', '$scope','$l
     //
 
     $scope.create = function () {
-        console.log($scope.product);
+        if($rootScope.paillierKeys ==undefined){
+            $http.get('https://localhost:8080/api/paillierKeys').success(function (response) {
+                $rootScope.paillierKeys = response
+            });
+        }
+        var msg = '0';
+        var n = bigInt($rootScope.paillierKeys.n);
+        var n2 = n.pow(2);
+        var g = bigInt($rootScope.paillierKeys.g);
+        var r1 = bigInt.randBetween(bigInt(0), n);
+        var bi1 =  bigInt(msg).mod(n);
+        $scope.product.seen = g.modPow(bi1, n2).multiply(r1.modPow(n, n2)).mod(n2).toString(16);
+
         $http.post('https://localhost:8080/api/ad/add',$scope.product).success(function (res) {
             console.log(res);
 
@@ -90,6 +102,7 @@ angular.module('cities').controller('CreateadController', ['$http', '$scope','$l
                 var file = new File([blob], 'fileName.jpeg', {type: "image/jpeg"});
                 var formData = new FormData();
                 formData.append('file', file);
+                console.log('FORM DATA');
                 console.log(formData);
 
                 $http.post('https://localhost:8080/api/ad/update/' + res._id, formData, {

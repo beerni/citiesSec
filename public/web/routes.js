@@ -1,6 +1,11 @@
 angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', 'btford.socket-io'])
     .run(['$rootScope', 'socketio', '$cookies', '$window', '$http','$location', function ($rootScope, socket, $cookies, $window, $http,$location) {
         $rootScope.clientKeys = rsaInt.generateKeys(512);
+        if($rootScope.paillierKeys ==undefined){
+            $http.get('https://localhost:8080/api/paillierKeys').success(function (response) {
+                $rootScope.paillierKeys = response
+            });
+        }
         if (angular.isUndefined($cookies.getObject('tokenData'))) {
             console.log("NO HAY TOKEN")
             $rootScope.isLogged = false;
@@ -67,6 +72,8 @@ angular.module('cities', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngImgCrop', '
                                 }
                             }
                         });
+                    $location.path('/shop');
+
 
                 }
                 else {
