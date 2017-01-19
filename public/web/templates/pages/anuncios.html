@@ -29,6 +29,7 @@
                                 <br>
                                 <a ng-if="product.username!=userLog.username" ng-click="chat(product._id,product.username, product.title)" class="btn btn-skin">Chat</a>
                                 <a href="#details/{{product._id}}" class="btn btn-skin">Details</a>
+                                <span style="left: 100px" class = "glyphicon glyphicon-eye-open">{{product.seen}}</span>
                             </div>
                         </div>
                         <br>

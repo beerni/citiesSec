@@ -60,9 +60,28 @@ router.post('/update/:id', function (req, res) {
 
 //Get all ads
 router.get('/getAll', function (req, res) {
+    var n = paillierKeys.publicKey.n;
+    var vistos;
+    var adsSeen = [];
+    var ad;
     Ad.find(function (err, ads) {
         if (err) res.send(500, err.message);
-        res.status(200).json(ads);
+        for (var i = 0; i < ads.length; i++) {
+            vistos = paillierKeys.privateKey.decrypt(bignum(ads[i].seen, 16)).toString();
+            add = {
+                seen: vistos.toString(),
+                imgurl: ads[i].imgurl,
+                username: ads[i].username,
+                description: ads[i].description,
+                title: ads[i].title,
+                price:ads[i].price,
+                _id:ads[i]._id
+            };
+            adsSeen.push(add);
+
+
+        }
+        res.status(200).json(adsSeen);
     });
 });
 
