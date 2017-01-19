@@ -11,9 +11,11 @@ angular.module('cities').controller('ChatController', ['$http', '$scope','socket
     $scope.allChats=[];
     $scope.mensajes=[];
     $scope.chatMsg=[];
+    $scope.userLog={};
     $scope.otheruser='';
     var texto = [];
     var userLogged = JSON.parse($cookies.get('tokenData'));
+    $scope.userLog.username=userLogged.user.username;
     socket.on('diffieInit', function (data) {
         console.log('DIFFIE INIT');
         $rootScope.keys.random = bigInt.randBetween(1, 10);
